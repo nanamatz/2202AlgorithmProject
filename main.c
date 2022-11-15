@@ -1,15 +1,18 @@
-//
-//  main.c
-//  AlgorithmProject
-//
-//  Created by 김동규 on 2022/11/03.
-//
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <conio.h>r 
+#include <windows.h>
 
+#define DIFFICULTY 100
 #define ITEM 12
 #define MAX_NUM(x,y)(x)>(y)? x:y
 
+bool isCaught = false;
+bool isStolen = false;
+FILE* fp_gameover = NULL;
 //2011년 여름, 플레이어 = 잼민이(12세), 
 // 
 //잼민이 특: 학원 상가 건물 지하 1층에 있는 하나로 마트에서 물건 훔치기를 잘함.
@@ -42,60 +45,16 @@ typedef struct {
     Item* itemList[ITEM+1];
 }ItemType;
 
-//typedef enum {
-//    S = 5, A = 4, B = 3, C = 2, D = 1
-//}Rank;
+void gotoxy(int x, int y)
 
-//typedef int element;
-//typedef struct{
-//    int size;
-//    element heap[MAX];
-//}Heap;
-//
-//Heap* create(Heap* h){
-//    return (Heap*)malloc(sizeof(Heap));
-//}
-//void init(Heap* h){
-//    h->size = 0;
-//}
-//    
-//void insert_min(Heap* h,element key){
-//    int i;
-//    i = ++h->size;
-//    
-//    while(i!=1 && key<h->heap[i/2]){
-//        h->heap[i] = h->heap[i/2];
-//        i /=2;
-//    }
-//    h->heap[i] = key;
-//}
-//element delete_min(Heap* h){
-//    element temp = h->heap[h->size--];
-//    element item = h->heap[1];
-//    int child=2;
-//    int parent=1;
-//    
-//    while(child <= h->size){
-//        if(child<h->size && h->heap[child]>h->heap[child+1]){
-//            child++;
-//        }
-//        if(temp<=h->heap[child]){
-//            break;
-//        }
-//        h->heap[parent] = h->heap[child];
-//        parent = child;
-//        child*=2;
-//    }
-//    h->heap[parent] = temp;
-//    return item;
-//    
-//}
-//
-//void HeapSortMin(int arr[],Heap* h){
-//    for(int i=1;i<MAX;i++){
-//        arr[i] = delete_min(h);
-//    }
-//}
+{
+
+    COORD pos = { x,y };
+
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+
+}
+
 //===========아이템 리스트 초기화===========
 void init_list(ItemType* head) {
     head->size = 0;
@@ -204,8 +163,142 @@ void knapsack(ItemType* bag,ItemType* head,int cost) {
     printf("\n");
 }
 
+void print_monitoring(FILE* fp) {
+    gotoxy(3, 5);
+    char print_temp[256];
+    while (fgets(print_temp, 255, fp) != NULL) {
+        printf(print_temp);
+    }
+    puts("");
+    rewind(fp);
+}
+void game_over() {
+    system("cls");
+    gotoxy(30, 15);
+    printf("잡았다 요놈!\n");
+    Sleep(2000);
+    print_monitoring(fp_gameover);
+    exit(0);
+}
+void monitoringSystem(FILE* fp1,FILE*fp2) {
+    system("cls");
+
+    char bar = '=';
+    char blank = ' ';
+    const int LEN = 20;
+    const int MAX = 500;
+    const int SPEED = 35;
+    int count = 0;
+    float tick = (float)100 / LEN;
+    int bar_count;
+    int blank_count = 0;
+    float percent;
+
+    FILE* tmp = fp1;
+    int endTime, startTime, monitorTime, random, i = 0;//i는 그냥 테스트용 변수
+    double timer;
+    srand(time(NULL));
+
+    while (count<=MAX) {
+        gotoxy(0, 0);
+
+        printf("\r%d/%d [", MAX, MAX - count);
+        percent = (float)count / MAX * 100;
+        bar_count = percent / tick;
+        for (int i = 0; i < LEN; i++) {
+            blank_count = LEN - bar_count;
+            if (blank_count > i) {
+                printf("%c", bar);
+            }
+            else {
+                printf("%c", blank);
+            }
+        }
+        printf("] %0.2f%%", percent);
+
+        Sleep(SPEED);
+
+        print_monitoring(tmp);
+        random = rand() % DIFFICULTY + 1;//1~200중 
+        
+        if (random == 100) {//200이 나오면 감시 모드
+
+            while (_kbhit()) {  //감시 모드에서 kbhit 정상 검사를 위해 버퍼를 사전에 비우는 작업
+                _getch();
+            }
+            tmp = fp2;
+
+            endTime = (unsigned)time(NULL);
+
+            monitorTime = rand() % 4 + 1; //1초~4초 감시
+
+            endTime += monitorTime;
+            
+            do {            //감시 진행
+                startTime = (unsigned)time(NULL);
+                print_monitoring(tmp);  //감시 화면 전환
+                Sleep(1000);    //플레이어에게 반응할 수 있는 시간을 부여 (1초)
+                if (_kbhit()) { //키보드가 눌리면 발각 됨
+                    isCaught = true;
+                    game_over();
+                }
+                if (endTime - startTime == 0) { //감시 시간이 끝나면 감시 종료
+                    tmp = fp1;
+                    system("cls");
+                    break;
+                }
+            } while (endTime - startTime != 0);
+
+            }
+        count++;
+        if (isStolen || isCaught)
+            break;
+        }
+
+}
+void init() {
+    system("mode con cols =200 lines = 100 | title 일월초 일짱 되기");
+}
+void print_title() {
+    gotoxy(0, 0);
+    printf("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n");
+    printf("■　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　■\n");
+    printf("■　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　■\n");
+    printf("■　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　■\n");
+    printf("■　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　■\n");
+    printf("■　　　　                    　　　　　　　　 ■■　　　　　　　　　　　　　　　　　　　　　　 ■\n");
+    printf("■　　　　　　　　　　　　                     ■■　　　　　　　　　　　　　　　　　　　　　　 ■\n");
+    printf("■　　　　　　　　　　　　                     ■■　　　　　　　　　　　　　　　　　　　　　　 ■\n");
+    printf("■　　　　　　　　　　　　                     ■■　　　　　　　　　　　　　　　　　　　　　　 ■\n");
+    printf("■　　　　　　　　　　　　                     ■■　　　　　　　　　　　　　　　　　　　　　　 ■\n");
+    printf("■　　　　　　　　　　　　                     ■■　　　　　　　　　　　　　　　　　　　　　　 ■\n");
+    printf("■　　　　　　　                    ■■　　　 ■■　　　  ■■　　　　　　　　　　　　　       ■\n");
+    printf("■　　　　　　                    ■■■■　　 ■■　　  ■■■■　　　　　　　　　　　　　　　 ■\n");
+    printf("■　　　　　                    ■■■■■■　 ■■　  ■■■■■■　　　　　　　　　　　　　　 ■\n");
+    printf("■　　　　　　                    ■■■■　■ ■■ ■　 ■■■■　　　　　　　　　　　　　     ■\n");
+    printf("■　　　　                    ■　　■■　 ■■■■■■　  ■■　  ■　　　　　　　　　　　　　 ■\n");
+    printf("■　　　　                      ■　　    ■■　　　■■　　　　 ■　　　　　　　　　　　　　　 ■\n");
+    printf("■　　　　                        ■■■■　■　　　■　■■■■　　　　　　　　　　　　　　　　■\n");
+    printf("■　　　　　　　　　　　                    ■　　　■　　　　　　　　　　　　　　　　　　　　　■\n");
+    printf("■                                          ■      ■                                          ■\n");
+    printf("■  　　　　　　　                          ■      ■                                          ■\n");
+    printf("■     　　                                 ■      ■                                          ■\n");
+    printf("■                                          ■      ■                                          ■\n");
+    printf("■                                          ■      ■                                          ■\n");
+    printf("■                                                                                              ■\n");
+    printf("■                                             START                                            ■\n");
+    printf("■                                             _EXIT                                            ■\n");
+    printf("■                                                                                              ■\n");
+    printf("■                                                                                              ■\n");
+    printf("■                                                                                              ■\n");
+    printf("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n");
+}
+
 int main(void) {
+    init();
+    //print_title();
     ItemType itemList;
+
     ItemType bag;
     init_list(&bag);
     init_list(&itemList);
@@ -223,13 +316,38 @@ int main(void) {
     insert_itemList(&itemList, create_item("매미 자석", 5, 4));
     insert_itemList(&itemList, create_item("파워레인저 축구게임 필통", 9, 7));
 
-    int cost = 0;// 0/1배낭 열 크기(비용)
-    printf("가방 용량을 입력하세요>> ");
-    scanf_s("%d", &cost);
+    FILE* fp_closeEye;
 
+    FILE* fp_openEye;
+
+    fp_closeEye = fopen("ClosedEye.txt", "rt");
+    fp_openEye = fopen("OpenEye.txt", "rt");
+    fp_gameover = fopen("gameover.txt", "rt");
+
+    if (fp_closeEye == NULL) {
+        fprintf(stderr, "파일1 불러오기 실패");
+        return 1;
+    }
+    if (fp_openEye == NULL) {
+        fprintf(stderr, "파일2 불러오기 실패");
+        return 1;
+    }
+    if (fp_gameover == NULL) {
+        fprintf(stderr, "파일3 불러오기 실패");
+        return 1;
+    }
+    monitoringSystem(fp_closeEye,fp_openEye);
+
+
+
+    int cost = 20;// 0/1배낭 열 크기(비용)
+    
     knapsack(&bag,&itemList,cost);
     print_itemList(&bag);
 
+    fclose(fp_closeEye);
+    fclose(fp_openEye);
+    fclose(fp_gameover);
  //[1]스테이지 : 딱따구리 문방구 -  물건 목록{1.제티 2.유희왕 카드 3.메이플 딱지(종이) 4.포포 5.차카니 6.아폴로 7.BB탄 권총 8.본드풍선 9.메탈베이블레이드 10.알림장 11.매미 자석 등등}
 //[2]스테이지 : 훼미리 마트 - 물건 목록{1.포켓몬빵 2.500컵(얼큰한 맛) 3.삼각 김밥 4.왕뚜껑 5.틴캐시 6.코카콜라 1.5L 7.바나나맛 우유 8.쉐이킷 붐붐 9.TOP 마스터 라떼 10.포카칩}
 //[3]스테이지 : 자하 수퍼 - 물건 목록{1.추파춥스 2.마일드 세븐(담배) 3.홈런볼 4.월드콘 5.자일리톨 6.참이슬 7.맥심 화이트 골드 8.자연은 종합 음료 세트 }
