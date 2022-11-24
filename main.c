@@ -78,7 +78,6 @@ bool monitoringSystem(ItemType* head, FILE* fp1, FILE* fp2);
 void knapsack(ItemType* bag, ItemType* head, int cost);
 
 
-
 void gotoxy(int x, int y)
 
 {
