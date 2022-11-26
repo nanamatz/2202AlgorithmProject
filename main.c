@@ -1,126 +1,218 @@
-//
-//  main.c
-//  AlgorithmProject
-//
-//  Created by ê¹€ë™ê·œ on 2022/11/03.
-//
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <conio.h>
+#include <windows.h>
+#include <string.h>
 
-#define COUNTRY 8
-#define MAX 10
+
+#define DIFFICULTY 100
+#define ITEM 6
+#define LEN 20
 #define MAX_NUM(x,y)(x)>(y)? x:y
 
+
+//2011³â ¿©¸§, ÇÃ·¹ÀÌ¾î = Àë¹ÎÀÌ(12¼¼), 
+// 
+//Àë¹ÎÀÌ Æ¯: ÇĞ¿ø »ó°¡ °Ç¹° ÁöÇÏ 1Ãş¿¡ ÀÖ´Â ÇÏ³ª·Î ¸¶Æ®¿¡¼­ ¹°°Ç ÈÉÄ¡±â¸¦ ÀßÇÔ.
+//Àë¹ÎÀÌÀÇ ²Ş: ÀÏ¿ùÃÊ ÀÚÅ¸ °øÀÎ ÀÏÂ¯ ÇüÅÃÀÌ¿Í Ä£ÇØÁö´Â °Í.
+// 
+//½ºÅ×ÀÌÁö(3): [1]½ºÅ×ÀÌÁö: ¿µÁØÀÌÀÇ ½ÉºÎ¸§ ¿Ï¼öÇÏ±â(À¯Èñ¿Õ Ä«µå)
+             //[2]½ºÅ×ÀÌÁö: µ¿ÇõÀÌÀÇ ½ÉºÎ¸§ ¿Ï¼öÇÏ±â(Æ¾Ä³½Ã 1¸¸¿ø±Ç)
+             //[3]½ºÅ×ÀÌÁö: ÇüÅÃÀÌÀÇ ½ÉºÎ¸§ ¿Ï¼öÇÏ±â(´ã¹è)
+             // 
+//[1]½ºÅ×ÀÌÁö : µüµû±¸¸® ¹®¹æ±¸ -  ¹°°Ç ¸ñ·Ï{1.Á¦Æ¼ 2.À¯Èñ¿Õ Ä«µå 3.¸ŞÀÌÇÃ µüÁö(Á¾ÀÌ) 4.Æ÷Æ÷ 5.Â÷Ä«´Ï 6.¾ÆÆú·Î 7.BBÅº ±ÇÃÑ 8.º»µåÇ³¼± 9.¸ŞÅ»º£ÀÌºí·¹ÀÌµå 10.¾Ë¸²Àå 11.¸Å¹Ì ÀÚ¼® µîµî}
+//[2]½ºÅ×ÀÌÁö : ÈÑ¹Ì¸® ¸¶Æ® - ¹°°Ç ¸ñ·Ï{1.Æ÷ÄÏ¸ó»§ 2.500ÄÅ(¾óÅ«ÇÑ ¸À) 3.»ï°¢ ±è¹ä 4.¿Õ¶Ñ²± 5.Æ¾Ä³½Ã 6.ÄÚÄ«Äİ¶ó 1.5L 7.¹Ù³ª³ª¸À ¿ìÀ¯ 8.½¦ÀÌÅ¶ ºÕºÕ 9.TOP ¸¶½ºÅÍ ¶ó¶¼ 10.Æ÷Ä«Ä¨}
+//[3]½ºÅ×ÀÌÁö : ÀÚÇÏ ¼öÆÛ - ¹°°Ç ¸ñ·Ï{1.ÃßÆÄÃä½º 2.¸¶ÀÏµå ¼¼ºì(´ã¹è) 3.È¨·±º¼ 4.¿ùµåÄÜ 5.ÀÚÀÏ¸®Åç 6.ÂüÀÌ½½ 7.¸Æ½É È­ÀÌÆ® °ñµå 8.ÀÚ¿¬Àº Á¾ÇÕ À½·á ¼¼Æ® }
+
+// °¢ ¹°°Ç¿¡´Â ¼±È£µµ(°¡Ä¡)¿Í ¹ß°¢ °è¼ö(¹«°Ô)°¡ Á¸Àç.
+// 
+// °¡¹æÀÇ ºÎÇÇº¸´Ù °¡¹æ ³» ¹°°ÇµéÀÇ ¹ß°¢ °è¼ö ÇÕÀÌ Å¬ °æ¿ì -> µµµÏÁú ¹ß°¢ ´çÇØ¼­ °ÔÀÓ ¿À¹ö
+// 
+// ½ÉºÎ¸§ ÁÖÀÎÀÇ ÀÏÁ¤ ¼±È£µµº¸´Ù °¡¹æ ³» ¹°°ÇµéÀÇ ¼±È£µµ ÇÕÀÌ ÀÛÀ» °æ¿ì -> ½ÉºÎ¸§ ÁÖÀÎ°ú Ä£ÇØÁö±â ½ÇÆĞÇØ¼­ °ÔÀÓ ¿À¹ö
+// 
+//°¡¹æ {1.½Ç³»È­ °¡¹æ 2.Ã¥°¡¹æ}
+
 typedef struct {
-    int departTime;
-    int arriveTime;
-}Air;
-typedef enum {
-    S = 5, A = 4, B = 3, C = 2, D = 1
-}Rank;
+    char* name; //¾ÆÀÌÅÛ ÀÌ¸§
+    int price;  //¾ÆÀÌÅÛ °¡Ä¡
+    int weight; //¾ÆÀÌÅÛ ¿ë·®
+    int difficulty; //¾ÆÀÌÅÛ ³­ÀÌµµ
+    bool isStolen;
+}Item;
 
-int W[COUNTRY + 1] = {0,2,6,4,3,1,7,2,3};
-int V[COUNTRY + 1] = { 0,S,S,B,A,C,S,D,B };
-char* BAG[COUNTRY + 1] = {NULL,"JAPAN","CHINA","TAIWAN","THAILAND","KHAMBODIA","TURKEY"
-                    ,"VIETNAM","MALAYSIA" };
+typedef struct {
+    int size;  //¾ÆÀÌÅÛ ¸®½ºÆ® Å©±â
+    Item* itemList[ITEM+1];  //¾ÆÀÌÅÛ ¹è¿­
+}ItemType;
+
+//Àü¿ªº¯¼ö
+//bool isCaught;  //ÈÉÄ¡´Ù °É·È´ÂÁö È®ÀÎÇÏ´Â º¯¼ö
+bool isStolen; //ÈÉÃÆ´ÂÁö È®ÀÎÇÏ´Â º¯¼ö
+FILE* fp_gameover = NULL; //°ÔÀÓ¿À¹ö ¾Æ½ºÅ° ¾ÆÆ® ÆÄÀÏ Æ÷ÀÎÅÍ
+FILE* fp_text = NULL; //ÅØ½ºÆ® ÆÄÀÏ Æ÷ÀÎÅÍ
+FILE* fp_closeEye = NULL;
+FILE* fp_openEye = NULL;
+FILE* fp_question = NULL;
+FILE* fp_userInput = NULL;
+char text[256]; //ÆÄÀÏ¿¡¼­ ÀĞ¾îµéÀÎ ¹®ÀÚ¿­ ÀúÀå ¹öÆÛ
+int itemNum; //»ç¿ëÀÚ°¡ ¼±ÅÃÇÏ´Â ¾ÆÀÌÅÛ ¹øÈ£
+int spaceCount;
+int cost = 20;// 0/1¹è³¶ ¿­ Å©±â(ºñ¿ë)
+
+//============°ÔÀÓ ÇÔ¼ö ¸ğÀ½============
+void init();
+void print_title();
+void game_over(ItemType* List);
+
+//===========¾ÆÀÌÅÛ °ü·Ã ÇÔ¼ö ¸ğÀ½============
+Item* create_item(char* name, int p, int w, int d);
+void insert_itemList(ItemType* head, Item* item);
+void print_userItemList(ItemType* head);
+void print_totalItemList(ItemType* head);
+void selectToStealItem();
+void print_inventory();
+//===========°¨½Ã ¸ğµå ÇÔ¼ö ¸ğÀ½==============
+void print_monitoring(FILE* fp);
+
+//===========¹è³¶ ¾Ë°í¸®Áò=================
+void knapsack(ItemType* bag, ItemType* head, int cost);
 
 
-typedef int element;
-typedef struct{
-    int size;
-    element heap[MAX];
-}Heap;
 
-Heap* create(Heap* h){
-    return (Heap*)malloc(sizeof(Heap));
+void gotoxy(int x, int y)
+
+{
+
+    COORD pos = { x,y };
+
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+
 }
-void init(Heap* h){
-    h->size = 0;
-}
-    
-void insert_min(Heap* h,element key){
-    int i;
-    i = ++h->size;
-    
-    while(i!=1 && key<h->heap[i/2]){
-        h->heap[i] = h->heap[i/2];
-        i /=2;
+
+//===========¾ÆÀÌÅÛ ¸®½ºÆ® ÃÊ±âÈ­===========
+void init_list(ItemType* head) {
+    head->size = 0;
+    for (int i = 0; i < ITEM+1; i++) {
+        head->itemList[i] = NULL;
     }
-    h->heap[i] = key;
 }
-element delete_min(Heap* h){
-    element temp = h->heap[h->size--];
-    element item = h->heap[1];
-    int child=2;
-    int parent=1;
-    
-    while(child <= h->size){
-        if(child<h->size && h->heap[child]>h->heap[child+1]){
-            child++;
-        }
-        if(temp<=h->heap[child]){
-            break;
-        }
-        h->heap[parent] = h->heap[child];
-        parent = child;
-        child*=2;
+//===========¾ÆÀÌÅÛ »ı¼º===========
+Item* create_item(char* name,int p,int w,int d) {
+    Item* temp = (Item*)malloc(sizeof(Item));
+    temp->name = name;
+    temp->price = p;
+    temp->weight = w;
+    temp->difficulty = d;
+    temp->isStolen = false;
+    return temp;
+}
+//===========¾ÆÀÌÅÛ ¸®½ºÆ®¿¡ Ãß°¡===========
+void insert_itemList(ItemType* head,Item* item) {
+    head->itemList[head->size++] = item;
+}
+
+//===========¾ÆÀÌÅÛ ¸®½ºÆ® Ãâ·Â===========
+void print_userItemList(ItemType* head) {
+    int sum_price = 0;
+    int sum_weight = 0;
+    printf("===================»óÇ° ¸ñ·Ï==================\n");
+    for (int i = 0; i < head->size; i++) {
+        printf("[%d]<%s>",i+1,head->itemList[i]->name);
+        sum_price += head->itemList[i]->price;
+        sum_weight += head->itemList[i]->weight;
+        printf("\n");
     }
-    h->heap[parent] = temp;
-    return item;
-    
+    printf("==================°¡Ä¡ ÃÑÇÕ===================\n");
+    printf("ÃÑ °¡Ä¡: [%d]\n", sum_price);
+    printf("==================°¡Ä¡ ÃÑÇÕ===================\n");
+    printf("ÃÑ ºÎÇÇ: [%d]", sum_weight);
 }
+//===========ÈÉÄ¥ ¾ÆÀÌÅÛ ¸®½ºÆ® Ãâ·Â===========
+void print_totalItemList(ItemType* head,ItemType* inventory) {
 
-void HeapSortMin(int arr[],Heap* h){
-    for(int i=1;i<MAX;i++){
-        arr[i] = delete_min(h);
+    printf("===================»óÇ° ¸ñ·Ï==================\n");
+    for (int i = 1; i < head->size; i++) {
+            printf("[%d]<%s>\n", i, head->itemList[i]->name);
+            printf("###°¡°İ:   [%d] \n###ºÎÇÇ:   [%d] \n###³­ÀÌµµ: [%d]", head->itemList[i]->price, head->itemList[i]->weight, head->itemList[i]->difficulty);
+            printf("\n\n");
+
     }
+    print_inventory(inventory);
+
 }
-
-
-void knapsack(int cost) {
+void print_inventory(ItemType* inventory) {
+    int sum_price = 0;
+    int sum_weight = 0;
+    int x, y;
+    x = 20;
+    y = 15;
+    gotoxy(x,y++);
+    printf("    #####");    gotoxy(x, y++);
+    printf("  ##     ##");    gotoxy(x, y++);
+    printf(" ##       ##");    gotoxy(x, y++);
+    printf("##         ##");    gotoxy(x, y++);
+    printf("#############");    
+    for (int i = 0; i < inventory->size; i++) {
+        sum_price += inventory->itemList[i]->price;
+        sum_weight += inventory->itemList[i]->weight;
+    }
+    gotoxy(x, y++);
+    printf("#¿ë·®: %d/ %d#",sum_weight,cost );
+    gotoxy(x, y++);
+    printf("#°¡Ä¡: %d    #", sum_price);
+    gotoxy(x, y++);
+    printf("#¹°°Ç: %d / %d#", inventory->size, ITEM);
+    gotoxy(x, y);
+    printf("#############");
+}
+//===========¹è³¶ ¾Ë°í¸®Áò===========
+void knapsack(ItemType* bag,ItemType* head,int cost) {
     int i, w;
     w = cost;
-    //==========0/1ë°°ë‚­ 2ì°¨ì› ë°°ì—´ ìƒì„±(ë™ì í• ë‹¹)==========
-    int** wp = (int**)malloc(sizeof(int*)*COUNTRY);
+    //==========0/1¹è³¶ 2Â÷¿ø ¹è¿­ »ı¼º(µ¿ÀûÇÒ´ç)==========
+    int** wp = (int**)malloc(sizeof(int*)*(ITEM+1));
     
-    for(int i=0;i<COUNTRY+1;i++){
+    for(int i=0;i<ITEM+1;i++){
         wp[i] = (int*)malloc(sizeof(int)*cost);
     }
-    //==========ë°°ë‚­ ì´ˆê¸°í™”==========
-    for(int i=0;i<COUNTRY+1;i++){
+    //==========¹è³¶ ÃÊ±âÈ­==========
+    for(int i=0;i<ITEM+1;i++){
         for(int j=0;j<cost;j++){
             wp[i][j] = 0;
         }
     }
-    //==========0/1 ë°°ë‚­ ì•Œê³ ë¦¬ì¦˜==========
-    for (i = 1; i < COUNTRY + 1; i++) {
+    //==========0/1 ¹è³¶ ¾Ë°í¸®Áò==========
+    for (i = 1; i < ITEM + 1; i++) {
         for (w = 0; w < cost; w++) {
-            if (w - W[i] < 0) {
+            if (w - head->itemList[i]->weight < 0) {
                 wp[i][w] = wp[i - 1][w];
             }
             else {
-                wp[i][w] = MAX_NUM(wp[i - 1][w], wp[i - 1][w - W[i]] + V[i]);
+                wp[i][w] = MAX_NUM(wp[i - 1][w], wp[i - 1][w - head->itemList[i]->weight] + head->itemList[i]->price);
             }
         }
     }
-    //==========0/1 ë°°ë‚­ ì•Œê³ ë¦¬ì¦˜ ê²°ê³¼ ì¶œë ¥==========
-    for (i = 1; i < COUNTRY + 1; i++) {
+    //==========0/1 ¹è³¶ ¾Ë°í¸®Áò °á°ú Ãâ·Â==========
+    for (i = 1; i < ITEM + 1; i++) {
         for (w = 0; w < cost; w++) {
             printf("%d ", wp[i][w]);
         }
         printf("\n");
     }
-    //==========ë°°ë‚­ì— í¬í•¨ëœ ìš”ì†Œ í™•ì¸ ì•Œê³ ë¦¬ì¦˜==========
+    //==========¹è³¶¿¡ Æ÷ÇÔµÈ ¿ä¼Ò È®ÀÎ ¾Ë°í¸®Áò==========
     w = cost-1;
-    int include[COUNTRY + 1] = { 0 };//í¬í•¨ ë¯¸í¬í•¨ ë¦¬ìŠ¤íŠ¸
+    int include[ITEM + 1] = { 0 };//Æ÷ÇÔ ¹ÌÆ÷ÇÔ ¸®½ºÆ®
     
     while(w){
-        i = COUNTRY;
+        i = ITEM;
         if (wp[i][w] != wp[i][w - 1]) {
             while (i > 0) {
                 if (wp[i - 1][w] != wp[i][w]) {
                     include[i] = 1;
-                    w = w - W[i];
+                    w = w - head->itemList[i]->weight;
                     break;
                 }
                 i--;
@@ -130,35 +222,306 @@ void knapsack(int cost) {
             w--;
         }
     }
-    //==========ë™ì  ë°°ì—´ í•´ì œ==========
-    for(int i=0;i<COUNTRY+1;i++){
+    //==========µ¿Àû ¹è¿­ ÇØÁ¦==========
+    for(int i=0;i<ITEM+1;i++){
         free(wp[i]);
     }
     free(wp);
-    //==========ë°°ë‚­ ì¶œë ¥==========
+    //==========¹è³¶ Æ÷ÇÔ==========
     printf("\n");
     int iq=1;
-    for (int j = 0; j < COUNTRY+1; j++) {
+    for (int j = 0; j < ITEM+1; j++) {
         if (include[j]) {
-            printf("%d.%s ",iq, BAG[j]);
+            printf("%d", include[j]);
+            insert_itemList(&bag, head->itemList[j]);
             iq++;
         }
     }
     printf("\n");
-    for(int i=0;i<COUNTRY+1;i++){
-        if(include[i]){ //ê°€ë°©ì— í¬í•¨ë˜ì–´ ìˆë‹¤ë©´
-            insert_min(h, airTime[i].departTime);
+}
+
+//============°¨½Ã È­¸é Ãâ·Â============
+void print_monitoring(FILE* fp) {
+    gotoxy(3, 3);
+    char print_temp[256];
+    while (fgets(print_temp, 255, fp) != NULL) {
+        printf(print_temp);
+    }
+    puts("");
+    rewind(fp);
+}
+
+//============°ÔÀÓ ¿À¹ö============
+void game_over() {
+    system("cls");
+    gotoxy(30, 15);
+    printf("Àâ¾Ò´Ù ¿ä³ğ!\n");
+    Sleep(2000);
+    print_monitoring(fp_gameover);
+    exit(0);
+    //retryÇÒ ¼ö ÀÖµµ·Ï ¸¸µé´Ù°¡ Áß´Ü
+}
+
+void printSpaceCount() {
+    gotoxy(0, 27);
+    printf("%d", spaceCount);
+}
+void keyIn() {
+    int userInputKey;
+    userInputKey = _getch();
+    if (userInputKey == 32) {
+        spaceCount--;
+    }
+}
+//===========°¨½Ã ÇÔ¼ö=============
+int monitoring() {
+
+    system("cls");
+
+    srand(time(NULL));
+
+    int endTime, startTime, monitorTime, random;
+    char bar = '=';//¹Ù ¹®ÀÚ
+    char blank = ' ';//°ø¹é
+    const int MAX = 500; //ÃÖ´ë Ä«¿îÆ® ¼ö
+    const int SPEED = 35; //Å¸ÀÌ¸Ó ½ºÇÇµå
+    int count = 0;  //Å¸ÀÌ¸Ó Ä«¿îÆ® º¯¼ö
+    float tick = (float)100 / LEN; //1Æ½ = 5ÆÛ¼¾Æ®
+    int bar_count;      //¹Ù °¹¼ö
+    int blank_count = 0;//°ø¹é °¹¼ö
+    float percent; //ÆÛ¼¾Å×ÀÌÁö º¯¼ö
+
+
+
+    while (count <= MAX) {
+
+        gotoxy(0, 0);
+        //Å¸ÀÌ¸Ó°¡ ÁøÇàµÇ´Â µ¿¾È ¼öÇà
+
+        //==============================================
+        printf("\r%d/%d [", MAX, MAX - count);
+        percent = (float)count / MAX * 100;
+        bar_count = percent / tick;
+        for (int i = 0; i < LEN; i++) {
+            blank_count = LEN - bar_count;
+            if (blank_count > i) {
+                printf("%c", bar);
+            }                       //Å¸ÀÌ¸Ó °è»ê ¹× Ãâ·Â ºÎºĞ
+            else {
+                printf("%c", blank);
+            }
+        }
+        printf("] %0.2f%%", 100 - percent);
+
+        Sleep(SPEED);
+
+        print_monitoring(fp_closeEye);//¾Æ½ºÅ° ¾ÆÆ® È­¸é Ãâ·Â
+        printSpaceCount();
+        if (_kbhit()) {
+            keyIn();
+        }
+        random = rand() % DIFFICULTY + 1;//1~100Áß 
+        //===========================================================
+        if (random == 100) {//100ÀÌ ³ª¿À¸é °¨½Ã ¸ğµå
+
+            endTime = (unsigned)time(NULL);
+
+            monitorTime = rand() % 4 + 1; //1ÃÊ~4ÃÊ °¨½Ã
+
+            endTime += monitorTime;
+            print_monitoring(fp_question);
+            Sleep(200);
+            while (_kbhit()) {  //°¨½Ã ¸ğµå¿¡¼­ kbhit Á¤»ó °Ë»ç¸¦ À§ÇØ ¹öÆÛ¸¦ »çÀü¿¡ ºñ¿ì´Â ÀÛ¾÷
+                _getch();
+            }
+
+            do {            //°¨½Ã ÁøÇà
+                startTime = (unsigned)time(NULL);
+
+                print_monitoring(fp_openEye);  //°¨½Ã È­¸é ÀüÈ¯
+
+                if (_kbhit()) { //Å°º¸µå°¡ ´­¸®¸é ¹ß°¢ µÊ
+                    game_over();
+                }
+                if (endTime - startTime <= 0) { //°¨½Ã ½Ã°£ÀÌ ³¡³ª¸é °¨½Ã Á¾·á
+                    system("cls");
+                    break;
+                }
+            } while (endTime - startTime != 0);
+        
+        }
+
+        count++;
+        if (spaceCount <= 0) {
+            return 1;//ÈÉÄ¡±â ¼º°ø
         }
     }
+    
+    return 0;
+}
+
+void init() {
+    system("mode con cols =50 lines = 100 | title ÀÏ¿ùÃÊ ÀÏÂ¯ µÇ±â");
+    //Ä¿¼­ ±ôºıÀÓ ¾ø¾Ö±â
+    CONSOLE_CURSOR_INFO cursorInfo = { 0, };
+    cursorInfo.bVisible = 0;
+    cursorInfo.dwSize = 1;
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
 
 }
+
+void selectToStealItem(ItemType* head,ItemType* inventory) {
+
+    while (1) {
+        gotoxy(20, 1);
+        printf("ÈÉÄ¥ ¹°°ÇÀÇ ¹øÈ£¸¦ ÀÔ·Â: ");
+        scanf_s("%d", &itemNum);
+        if (head->itemList[itemNum]->isStolen) {
+            gotoxy(20, 2);
+            printf("%s´Â ÀÌ¹Ì ÈÉÄ£ ¹°°ÇÀÔ´Ï´Ù.", head->itemList[itemNum]->name);
+            Sleep(1000);
+            system("cls");
+            print_totalItemList(head,inventory);
+        }
+        else {
+            return;
+        }
+    }
+}
+void print_title() {
+    gotoxy(0, 0);
+    printf("¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡                    ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡                     ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡                     ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡                     ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡                     ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡                     ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡                    ¡á¡á¡¡¡¡¡¡ ¡á¡á¡¡¡¡¡¡  ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡       ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡                    ¡á¡á¡á¡á¡¡¡¡ ¡á¡á¡¡¡¡  ¡á¡á¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡                    ¡á¡á¡á¡á¡á¡á¡¡ ¡á¡á¡¡  ¡á¡á¡á¡á¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡                    ¡á¡á¡á¡á¡¡¡á ¡á¡á ¡á¡¡ ¡á¡á¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡     ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡                    ¡á¡¡¡¡¡á¡á¡¡ ¡á¡á¡á¡á¡á¡á¡¡  ¡á¡á¡¡  ¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡                      ¡á¡¡¡¡    ¡á¡á¡¡¡¡¡¡¡á¡á¡¡¡¡¡¡¡¡ ¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡                        ¡á¡á¡á¡á¡¡¡á¡¡¡¡¡¡¡á¡¡¡á¡á¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡                    ¡á¡¡¡¡¡¡¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡á\n");
+    printf("¡á                                          ¡á      ¡á                                          ¡á\n");
+    printf("¡á  ¡¡¡¡¡¡¡¡¡¡¡¡¡¡                          ¡á      ¡á                                          ¡á\n");
+    printf("¡á     ¡¡¡¡                                 ¡á      ¡á                                          ¡á\n");
+    printf("¡á                                          ¡á      ¡á                                          ¡á\n");
+    printf("¡á                                          ¡á      ¡á                                          ¡á\n");
+    printf("¡á                                                                                              ¡á\n");
+    printf("¡á                                             START                                            ¡á\n");
+    printf("¡á                                             _EXIT                                            ¡á\n");
+    printf("¡á                                                                                              ¡á\n");
+    printf("¡á                                                                                              ¡á\n");
+    printf("¡á                                                                                              ¡á\n");
+    printf("¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á\n");
+
+    getchar();
+    system("cls");
+}
+
 int main(void) {
+    init();
+
+    ItemType List;
+    ItemType bag;
+    init_list(&bag);
+    init_list(&List);
+    //¾ÆÀÌÅÛ ¸®½ºÆ® »ı¼º
+    insert_itemList(&List, create_item(" ", 0, 0,0));
+    insert_itemList(&List, create_item("Á¦Æ¼", 2, 1,10));
+    insert_itemList(&List, create_item("À¯Èñ¿Õ Ä«µå", 9, 4,30));
+    insert_itemList(&List, create_item("¸ŞÀÌÇÃ µüÁö", 3, 2,25));
+    insert_itemList(&List, create_item("Â÷Ä«´Ï", 4, 4,20));
+    insert_itemList(&List, create_item("º»µå Ç³¼±", 2, 2,50));
+    insert_itemList(&List, create_item("¸Å¹Ì ÀÚ¼®", 5, 4,40));
+
+
+
+    //ÀÌ¹ÌÁö ÆÄÀÏ ±¸Á¶Ã¼ Æ÷ÀÎÅÍ »ı¼º
+
+    fp_closeEye = fopen("ClosedEye.txt", "rt");
+    fp_openEye = fopen("OpenEye.txt", "rt");
+    fp_gameover = fopen("gameover.txt", "rt");
+    fp_text = fopen("text.txt", "rt");
+    fp_question = fopen("questionMark.txt", "rt");
+    fp_userInput = fopen("userInput.txt", "wt");
+
+
+
+    if (fp_closeEye == NULL) {
+        fprintf(stderr, "ÆÄÀÏ1 ºÒ·¯¿À±â ½ÇÆĞ");
+        return 1;
+    }
+    if (fp_openEye == NULL) {
+        fprintf(stderr, "ÆÄÀÏ2 ºÒ·¯¿À±â ½ÇÆĞ");
+        return 1;
+    }
+    if (fp_gameover == NULL) {
+        fprintf(stderr, "ÆÄÀÏ3 ºÒ·¯¿À±â ½ÇÆĞ");
+        return 1;
+    }
+    if (fp_text == NULL) {
+        fprintf(stderr, "ÆÄÀÏ4 ºÒ·¯¿À±â ½ÇÆĞ");
+        return 1;
+    }
+    if (fp_question == NULL) {
+        fprintf(stderr, "ÆÄÀÏ5 ºÒ·¯¿À±â ½ÇÆĞ");
+        return 1;
+    }
+    if (fp_userInput == NULL) {
+        fprintf(stderr, "ÆÄÀÏ6 ºÒ·¯¿À±â ½ÇÆĞ");
+        return 1;
+    }
+
+    print_title();
+    while (1) {
+
+        system("cls");
+
+        print_totalItemList(&List,&bag);//¾ÆÀÌÅÛ ¸ñ·Ï Ãâ·Â
+
+        selectToStealItem(&List,&bag);//ÈÉÄ¥ »óÇ° ¹øÈ£ ÀÔ·Â¹Ş±â
+
+        spaceCount = 10 * List.itemList[itemNum]->difficulty;
+
+        if (monitoring()) {
+            system("cls");
+
+            insert_itemList(&bag, List.itemList[itemNum]);
+
+            print_userItemList(&bag);
+
+            List.itemList[itemNum]->isStolen = true;
+
+            gotoxy(20, 15);
+
+            printf("%s¸¦ ÈÉÄ¡´Âµ¥ ¼º°øÇß´Ù!", List.itemList[itemNum]->name);
+            Sleep(2000);
+        }
+
+    }
+
+
+
     
-    int cost=0;// 0/1ë°°ë‚­ ì—´ í¬ê¸°(ë¹„ìš©)
-    printf("ì—¬í–‰ ë¹„ìš©ì„ ì…ë ¥í•˜ì„¸ìš”>> ");
-    scanf("%d",&cost);
-    
-    knapsack(cost);
-    //machineScehduling
+    knapsack(&bag,&List,cost);
+    print_userItemList(&bag);
+
+    fclose(fp_closeEye);
+    fclose(fp_openEye);
+    fclose(fp_gameover);
+ //[1]½ºÅ×ÀÌÁö : µüµû±¸¸® ¹®¹æ±¸ -  ¹°°Ç ¸ñ·Ï{1.Á¦Æ¼ 2.À¯Èñ¿Õ Ä«µå 3.¸ŞÀÌÇÃ µüÁö(Á¾ÀÌ) 4.Æ÷Æ÷ 5.Â÷Ä«´Ï 6.¾ÆÆú·Î 7.BBÅº ±ÇÃÑ 8.º»µåÇ³¼± 9.¸ŞÅ»º£ÀÌºí·¹ÀÌµå 10.¾Ë¸²Àå 11.¸Å¹Ì ÀÚ¼® µîµî}
+//[2]½ºÅ×ÀÌÁö : ÈÑ¹Ì¸® ¸¶Æ® - ¹°°Ç ¸ñ·Ï{1.Æ÷ÄÏ¸ó»§ 2.500ÄÅ(¾óÅ«ÇÑ ¸À) 3.»ï°¢ ±è¹ä 4.¿Õ¶Ñ²± 5.Æ¾Ä³½Ã 6.ÄÚÄ«Äİ¶ó 1.5L 7.¹Ù³ª³ª¸À ¿ìÀ¯ 8.½¦ÀÌÅ¶ ºÕºÕ 9.TOP ¸¶½ºÅÍ ¶ó¶¼ 10.Æ÷Ä«Ä¨}
+//[3]½ºÅ×ÀÌÁö : ÀÚÇÏ ¼öÆÛ - ¹°°Ç ¸ñ·Ï{1.ÃßÆÄÃä½º 2.¸¶ÀÏµå ¼¼ºì(´ã¹è) 3.È¨·±º¼ 4.¿ùµåÄÜ 5.ÀÚÀÏ¸®Åç 6.ÂüÀÌ½½ 7.¸Æ½É È­ÀÌÆ® °ñµå 8.ÀÚ¿¬Àº Á¾ÇÕ À½·á ¼¼Æ® }
+
+
+
     return 0;
 }
