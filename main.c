@@ -8,77 +8,80 @@
 #include <string.h>
 
 
-#define DIFFICULTY 200
-#define ITEM 6
-#define LEN 20
-#define MAX_NUM(x,y)(x)>(y)? x:y
+#define DIFFICULTY 200 //³­ÀÌµµ(°¨½Ã È®·ü)
+#define ITEM 6 // ¾ÆÀÌÅÛ °³¼ö
+#define LEN 20 // Å¸ÀÌ¸Ó ¹Ù °³¼ö
+#define MAX_NUM(x,y)(x)>(y)? x:y //¹è³¶ ¾Ë°í¸®Áò ÃÖ´ë°ª ÇÔ¼ö
 
 
-//2011ë…„ ì—¬ë¦„, í”Œë ˆì´ì–´ = ì¼ë¯¼ì´(12ì„¸), 
+//2011³â ¿©¸§, ÇÃ·¹ÀÌ¾î = Àë¹ÎÀÌ(12¼¼), 
 // 
-//ì¼ë¯¼ì´ íŠ¹: í•™ì› ìƒê°€ ê±´ë¬¼ ì§€í•˜ 1ì¸µì— ìˆëŠ” í•˜ë‚˜ë¡œ ë§ˆíŠ¸ì—ì„œ ë¬¼ê±´ í›”ì¹˜ê¸°ë¥¼ ì˜í•¨.
-//ì¼ë¯¼ì´ì˜ ê¿ˆ: ì¼ì›”ì´ˆ ìíƒ€ ê³µì¸ ì¼ì§± í˜•íƒì´ì™€ ì¹œí•´ì§€ëŠ” ê²ƒ.
+//Àë¹ÎÀÌ Æ¯: ÇĞ¿ø »ó°¡ °Ç¹° ÁöÇÏ 1Ãş¿¡ ÀÖ´Â ÇÏ³ª·Î ¸¶Æ®¿¡¼­ ¹°°Ç ÈÉÄ¡±â¸¦ ÀßÇÔ.
+//Àë¹ÎÀÌÀÇ ²Ş: ÀÏ¿ùÃÊ ÀÚÅ¸ °øÀÎ ÀÏÂ¯ ÇüÅÃÀÌ¿Í Ä£ÇØÁö´Â °Í.
 // 
-//ìŠ¤í…Œì´ì§€(3): [1]ìŠ¤í…Œì´ì§€: ì˜ì¤€ì´ì˜ ì‹¬ë¶€ë¦„ ì™„ìˆ˜í•˜ê¸°(ìœ í¬ì™• ì¹´ë“œ)
-             //[2]ìŠ¤í…Œì´ì§€: ë™í˜ì´ì˜ ì‹¬ë¶€ë¦„ ì™„ìˆ˜í•˜ê¸°(í‹´ìºì‹œ 1ë§Œì›ê¶Œ)
-             //[3]ìŠ¤í…Œì´ì§€: í˜•íƒì´ì˜ ì‹¬ë¶€ë¦„ ì™„ìˆ˜í•˜ê¸°(ë‹´ë°°)
+//½ºÅ×ÀÌÁö(3): [1]½ºÅ×ÀÌÁö: ¿µÁØÀÌÀÇ ½ÉºÎ¸§ ¿Ï¼öÇÏ±â(À¯Èñ¿Õ Ä«µå)
+             //[2]½ºÅ×ÀÌÁö: µ¿ÇõÀÌÀÇ ½ÉºÎ¸§ ¿Ï¼öÇÏ±â(Æ¾Ä³½Ã 1¸¸¿ø±Ç)
+             //[3]½ºÅ×ÀÌÁö: ÇüÅÃÀÌÀÇ ½ÉºÎ¸§ ¿Ï¼öÇÏ±â(´ã¹è)
              // 
-//[1]ìŠ¤í…Œì´ì§€ : ë”±ë”°êµ¬ë¦¬ ë¬¸ë°©êµ¬ -  ë¬¼ê±´ ëª©ë¡{1.ì œí‹° 2.ìœ í¬ì™• ì¹´ë“œ 3.ë©”ì´í”Œ ë”±ì§€(ì¢…ì´) 4.í¬í¬ 5.ì°¨ì¹´ë‹ˆ 6.ì•„í´ë¡œ 7.BBíƒ„ ê¶Œì´ 8.ë³¸ë“œí’ì„  9.ë©”íƒˆë² ì´ë¸”ë ˆì´ë“œ 10.ì•Œë¦¼ì¥ 11.ë§¤ë¯¸ ìì„ ë“±ë“±}
-//[2]ìŠ¤í…Œì´ì§€ : í›¼ë¯¸ë¦¬ ë§ˆíŠ¸ - ë¬¼ê±´ ëª©ë¡{1.í¬ì¼“ëª¬ë¹µ 2.500ì»µ(ì–¼í°í•œ ë§›) 3.ì‚¼ê° ê¹€ë°¥ 4.ì™•ëšœê»‘ 5.í‹´ìºì‹œ 6.ì½”ì¹´ì½œë¼ 1.5L 7.ë°”ë‚˜ë‚˜ë§› ìš°ìœ  8.ì‰ì´í‚· ë¶ë¶ 9.TOP ë§ˆìŠ¤í„° ë¼ë–¼ 10.í¬ì¹´ì¹©}
-//[3]ìŠ¤í…Œì´ì§€ : ìí•˜ ìˆ˜í¼ - ë¬¼ê±´ ëª©ë¡{1.ì¶”íŒŒì¶¥ìŠ¤ 2.ë§ˆì¼ë“œ ì„¸ë¸(ë‹´ë°°) 3.í™ˆëŸ°ë³¼ 4.ì›”ë“œì½˜ 5.ìì¼ë¦¬í†¨ 6.ì°¸ì´ìŠ¬ 7.ë§¥ì‹¬ í™”ì´íŠ¸ ê³¨ë“œ 8.ìì—°ì€ ì¢…í•© ìŒë£Œ ì„¸íŠ¸ }
+//[1]½ºÅ×ÀÌÁö : µüµû±¸¸® ¹®¹æ±¸ -  ¹°°Ç ¸ñ·Ï{1.Á¦Æ¼ 2.À¯Èñ¿Õ Ä«µå 3.¸ŞÀÌÇÃ µüÁö(Á¾ÀÌ) 4.Æ÷Æ÷ 5.Â÷Ä«´Ï 6.¾ÆÆú·Î 7.BBÅº ±ÇÃÑ 8.º»µåÇ³¼± 9.¸ŞÅ»º£ÀÌºí·¹ÀÌµå 10.¾Ë¸²Àå 11.¸Å¹Ì ÀÚ¼® µîµî}
+//[2]½ºÅ×ÀÌÁö : ÈÑ¹Ì¸® ¸¶Æ® - ¹°°Ç ¸ñ·Ï{1.Æ÷ÄÏ¸ó»§ 2.500ÄÅ(¾óÅ«ÇÑ ¸À) 3.»ï°¢ ±è¹ä 4.¿Õ¶Ñ²± 5.Æ¾Ä³½Ã 6.ÄÚÄ«Äİ¶ó 1.5L 7.¹Ù³ª³ª¸À ¿ìÀ¯ 8.½¦ÀÌÅ¶ ºÕºÕ 9.TOP ¸¶½ºÅÍ ¶ó¶¼ 10.Æ÷Ä«Ä¨}
+//[3]½ºÅ×ÀÌÁö : ÀÚÇÏ ¼öÆÛ - ¹°°Ç ¸ñ·Ï{1.ÃßÆÄÃä½º 2.¸¶ÀÏµå ¼¼ºì(´ã¹è) 3.È¨·±º¼ 4.¿ùµåÄÜ 5.ÀÚÀÏ¸®Åç 6.ÂüÀÌ½½ 7.¸Æ½É È­ÀÌÆ® °ñµå 8.ÀÚ¿¬Àº Á¾ÇÕ À½·á ¼¼Æ® }
 
-// ê° ë¬¼ê±´ì—ëŠ” ì„ í˜¸ë„(ê°€ì¹˜)ì™€ ë°œê° ê³„ìˆ˜(ë¬´ê²Œ)ê°€ ì¡´ì¬.
+// °¢ ¹°°Ç¿¡´Â ¼±È£µµ(°¡Ä¡)¿Í ¹ß°¢ °è¼ö(¹«°Ô)°¡ Á¸Àç.
 // 
-// ê°€ë°©ì˜ ë¶€í”¼ë³´ë‹¤ ê°€ë°© ë‚´ ë¬¼ê±´ë“¤ì˜ ë°œê° ê³„ìˆ˜ í•©ì´ í´ ê²½ìš° -> ë„ë‘‘ì§ˆ ë°œê° ë‹¹í•´ì„œ ê²Œì„ ì˜¤ë²„
+// °¡¹æÀÇ ºÎÇÇº¸´Ù °¡¹æ ³» ¹°°ÇµéÀÇ ¹ß°¢ °è¼ö ÇÕÀÌ Å¬ °æ¿ì -> µµµÏÁú ¹ß°¢ ´çÇØ¼­ °ÔÀÓ ¿À¹ö
 // 
-// ì‹¬ë¶€ë¦„ ì£¼ì¸ì˜ ì¼ì • ì„ í˜¸ë„ë³´ë‹¤ ê°€ë°© ë‚´ ë¬¼ê±´ë“¤ì˜ ì„ í˜¸ë„ í•©ì´ ì‘ì„ ê²½ìš° -> ì‹¬ë¶€ë¦„ ì£¼ì¸ê³¼ ì¹œí•´ì§€ê¸° ì‹¤íŒ¨í•´ì„œ ê²Œì„ ì˜¤ë²„
+// ½ÉºÎ¸§ ÁÖÀÎÀÇ ÀÏÁ¤ ¼±È£µµº¸´Ù °¡¹æ ³» ¹°°ÇµéÀÇ ¼±È£µµ ÇÕÀÌ ÀÛÀ» °æ¿ì -> ½ÉºÎ¸§ ÁÖÀÎ°ú Ä£ÇØÁö±â ½ÇÆĞÇØ¼­ °ÔÀÓ ¿À¹ö
 // 
-//ê°€ë°© {1.ì‹¤ë‚´í™” ê°€ë°© 2.ì±…ê°€ë°©}
+//°¡¹æ {1.½Ç³»È­ °¡¹æ 2.Ã¥°¡¹æ}
 
 typedef struct {
-    char* name; //ì•„ì´í…œ ì´ë¦„
-    int price;  //ì•„ì´í…œ ê°€ì¹˜
-    int weight; //ì•„ì´í…œ ìš©ëŸ‰
-    int difficulty; //ì•„ì´í…œ ë‚œì´ë„
-    bool isStolen;
+    char* name; //¾ÆÀÌÅÛ ÀÌ¸§
+    int price;  //¾ÆÀÌÅÛ °¡Ä¡
+    int weight; //¾ÆÀÌÅÛ ¿ë·®
+    int difficulty; //¾ÆÀÌÅÛ ³­ÀÌµµ
+    bool isStolen; //ÀÌ¹Ì ÈÉÄ£ ¾ÆÀÌÅÛÀº ¸øÈÉÄ¡°Ô º¯¼ö
 }Item;
 
 typedef struct {
-    int size;  //ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ í¬ê¸°
-    Item* itemList[ITEM+1];  //ì•„ì´í…œ ë°°ì—´
-    int capacity;
+    int size;  //¾ÆÀÌÅÛ ¸®½ºÆ® Å©±â
+    Item* itemList[ITEM+1];  //¾ÆÀÌÅÛ ¹è¿­
+    int capacity; //³²Àº ¿ë·® 
 }ItemType;
 
-//ì „ì—­ë³€ìˆ˜
-FILE* fp_gameover = NULL; //ê²Œì„ì˜¤ë²„ ì•„ìŠ¤í‚¤ ì•„íŠ¸ íŒŒì¼ í¬ì¸í„°
-FILE* fp_closeEye = NULL;
-FILE* fp_openEye = NULL;
-FILE* fp_question = NULL;
+//Àü¿ªº¯¼ö
+//=============¾Æ½ºÅ° ¾ÆÆ® ÆÄÀÏ Æ÷ÀÎÅÍ===============
+FILE* fp_gameover = NULL; //°ÔÀÓ ¿À¹ö
+FILE* fp_closeEye = NULL; //ºñ°¨½Ã ¸ğµå
+FILE* fp_openEye = NULL; //°¨½Ã ¸ğµå
+FILE* fp_question = NULL; //¹°À½Ç¥
+FILE* fp_happyEnding = NULL;//ÇØÇÇ ¿£µù
+FILE* fp_badEnding = NULL;//¹èµå¿£µù
+//============º¯¼ö=================
+char text[256]; //ÆÄÀÏ¿¡¼­ ÀĞ¾îµéÀÎ ¹®ÀÚ¿­ ÀúÀå ¹öÆÛ
+int itemNum; //»ç¿ëÀÚ°¡ ¼±ÅÃÇÏ´Â ¾ÆÀÌÅÛ ¹øÈ£
+int spaceCount;//½ºÆäÀÌ½º ´­·¯¾ßÇÏ´Â °³¼ö
+int cost = 10;// 0/1¹è³¶ ¿­ Å©±â(ºñ¿ë)
+int userSolution=0; //»ç¿ëÀÚ ¹è³¶ÀÇ ÃÑ °¡Ä¡
+int userCap=0; //»ç¿ëÀÚ ¹è³¶ÀÇ ÃÑ ¹«°Ô
 
-char text[256]; //íŒŒì¼ì—ì„œ ì½ì–´ë“¤ì¸ ë¬¸ìì—´ ì €ì¥ ë²„í¼
-int itemNum; //ì‚¬ìš©ìê°€ ì„ íƒí•˜ëŠ” ì•„ì´í…œ ë²ˆí˜¸
-int spaceCount;
-int cost = 10;// 0/1ë°°ë‚­ ì—´ í¬ê¸°(ë¹„ìš©)
-int userSolution=0;
-int userCap=0;
-
-//============ê²Œì„ í•¨ìˆ˜ ëª¨ìŒ============
+//============°ÔÀÓ ÇÔ¼ö ¸ğÀ½============
 void init();
 void print_title();
 void game_over(ItemType* List);
 
-//===========ì•„ì´í…œ ê´€ë ¨ í•¨ìˆ˜ ëª¨ìŒ============
+//===========¾ÆÀÌÅÛ °ü·Ã ÇÔ¼ö ¸ğÀ½============
 Item* create_item(char* name, int p, int w, int d);
 void insert_itemList(ItemType* head, Item* item);
 void print_userItemList(ItemType* head);
 void print_totalItemList(ItemType* head);
 int selectToStealItem(ItemType* head,ItemType* inventory);
 void print_inventory();
-//===========ê°ì‹œ ëª¨ë“œ í•¨ìˆ˜ ëª¨ìŒ==============
+//===========°¨½Ã ¸ğµå ÇÔ¼ö ¸ğÀ½==============
 void print_monitoring(FILE* fp);
 
-//===========ë°°ë‚­ ì•Œê³ ë¦¬ì¦˜=================
-void knapsack(ItemType* bag, ItemType* head, int cost);
+//===========¹è³¶ ¾Ë°í¸®Áò=================
+int knapsack(ItemType* bag, ItemType* head, int cost);
 
 void game_clear();
 void game_fail();
@@ -93,7 +96,7 @@ void gotoxy(int x, int y)
 
 }
 
-//===========ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™”===========
+//===========¾ÆÀÌÅÛ ¸®½ºÆ® ÃÊ±âÈ­===========
 void init_list(ItemType* head) {
     head->size = 0;
     head->capacity = cost;
@@ -101,7 +104,7 @@ void init_list(ItemType* head) {
         head->itemList[i] = NULL;
     }
 }
-//===========ì•„ì´í…œ ìƒì„±===========
+//===========¾ÆÀÌÅÛ »ı¼º===========
 Item* create_item(char* name,int p,int w,int d) {
     Item* temp = (Item*)malloc(sizeof(Item));
     temp->name = name;
@@ -111,20 +114,20 @@ Item* create_item(char* name,int p,int w,int d) {
     temp->isStolen = false;
     return temp;
 }
-//===========ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€===========
+//===========¾ÆÀÌÅÛ ¸®½ºÆ®¿¡ Ãß°¡===========
 void insert_itemList(ItemType* head,Item* item) {
     head->itemList[head->size++] = item;
     head->capacity -= item->weight;
 }
 
-//===========ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ ì¶œë ¥===========
+//===========¾ÆÀÌÅÛ ¸®½ºÆ® Ãâ·Â===========
 void print_userItemList(ItemType* head) {
 
     int x, y;
     x = 35;
     y = 12;
     gotoxy(x, y++);
-    printf("================ì‹¤ë‚´í™” ê°€ë°©================\n");
+    printf("================½Ç³»È­ °¡¹æ================\n");
     for (int i = 0; i < head->size; i++) {
         gotoxy(x, y++);
         printf("%d.[%s]",i+1,head->itemList[i]->name);
@@ -132,39 +135,39 @@ void print_userItemList(ItemType* head) {
         userCap += head->itemList[i]->weight;
     }
     gotoxy(x, y++);
-    printf("==================ì´ ê°€ì¹˜==================\n");
+    printf("==================ÃÑ °¡Ä¡==================\n");
     gotoxy(x, y++);
-    printf("ì´ ê°€ì¹˜: [%d]\n", userSolution);
+    printf("ÃÑ °¡Ä¡: [%d]\n", userSolution);
     gotoxy(x, y++);
-    printf("==================ì´ ë¶€í”¼==================\n");
+    printf("==================ÃÑ ºÎÇÇ==================\n");
     gotoxy(x, y++);
-    printf("ì´ ë¬´ê²Œ: [%d]", userCap);
+    printf("ÃÑ ¹«°Ô: [%d]", userCap);
 }
-//===========í›”ì¹  ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ ì¶œë ¥===========
+//===========ÈÉÄ¥ ¾ÆÀÌÅÛ ¸®½ºÆ® Ãâ·Â===========
 void print_totalItemList(ItemType* head,ItemType* inventory) {
     int x, y;
     x = 0;
     y = 0;
     gotoxy(x, y++);
-    printf("================<<ë”±ë”°êµ¬ë¦¬ ë¬¸ë°©êµ¬>>==============\n");
+    printf("================<<µüµû±¸¸® ¹®¹æ±¸>>==============\n");
     for (int i = 1; i < head->size; i++) {
 
         if (head->itemList[i]->isStolen) {
             gotoxy(x, y++);
-            printf("%d.[%s]â—†", i, head->itemList[i]->name);
+            printf("%d.[%s]¡ß", i, head->itemList[i]->name);
             }
         else {
             gotoxy(x, y++);
-            printf("%d.[%s]â—‡", i, head->itemList[i]->name);
+            printf("%d.[%s]¡Ş", i, head->itemList[i]->name);
         }
             gotoxy(x, y++);
-            printf("ê°€ì¹˜: (%d) ë¶€í”¼: (%d) ë‚œì´ë„: ", 
+            printf("°¡Ä¡: (%d) ºÎÇÇ: (%d) ³­ÀÌµµ: ", 
                 head->itemList[i]->price, head->itemList[i]->weight);
             for (int j = 0; j < head->itemList[i]->difficulty; j++) {
-                printf("â˜…");
+                printf("¡Ú");
             }
             for (int k = 5 - head->itemList[i]->difficulty; k > 0; k--) {
-                printf("â˜†");
+                printf("¡Ù");
             }
             y++;
             gotoxy(x, y++); printf("=================================================");
@@ -188,34 +191,34 @@ void print_inventory(ItemType* inventory) {
         sum_weight += inventory->itemList[i]->weight;
     }
     gotoxy(x, y++);
-    printf("#ìš©ëŸ‰:%2d/ %d#",sum_weight,cost );
+    printf("#¿ë·®:%2d/ %d#",sum_weight,cost );
     gotoxy(x, y++);
-    printf("#ê°€ì¹˜:%2d    #", sum_price);
+    printf("#°¡Ä¡:%2d    #", sum_price);
     gotoxy(x, y++);
-    printf("#ë¬¼ê±´:%2d / %d#", inventory->size, ITEM);
+    printf("#¹°°Ç:%2d / %d#", inventory->size, ITEM);
     gotoxy(x, y++);
     printf("#############");
 
 }
-//===========ë°°ë‚­ ì•Œê³ ë¦¬ì¦˜===========
+//===========¹è³¶ ¾Ë°í¸®Áò===========
 int knapsack(ItemType* bag,ItemType* head,int cost) {
     int i, w;
     int bestSolution;
     int bestSolution_weight = 0;
     w = cost;
-    //==========0/1ë°°ë‚­ 2ì°¨ì› ë°°ì—´ ìƒì„±(ë™ì í• ë‹¹)==========
+    //==========0/1¹è³¶ 2Â÷¿ø ¹è¿­ »ı¼º(µ¿ÀûÇÒ´ç)==========
     int** wp = (int**)malloc(sizeof(int*)*(ITEM+1));
     
     for(int i=0;i<ITEM+1;i++){
         wp[i] = (int*)malloc(sizeof(int)*(cost+1));
     }
-    //==========ë°°ë‚­ ì´ˆê¸°í™”==========
+    //==========¹è³¶ ÃÊ±âÈ­==========
     for(int i=0;i<ITEM+1;i++){
         for(int j=0;j<cost;j++){
             wp[i][j] = 0;
         }
     }
-    //==========0/1 ë°°ë‚­ ì•Œê³ ë¦¬ì¦˜==========
+    //==========0/1 ¹è³¶ ¾Ë°í¸®Áò==========
     for (i = 1; i < ITEM + 1; i++) {
         for (w = 1; w < cost+1; w++) {
             if (w - head->itemList[i]->weight < 0) {
@@ -229,9 +232,9 @@ int knapsack(ItemType* bag,ItemType* head,int cost) {
 
     bestSolution = wp[ITEM][cost];
 
-    //==========0/1 ë°°ë‚­ ì•Œê³ ë¦¬ì¦˜ ê²°ê³¼ ì¶œë ¥==========
+    //==========0/1 ¹è³¶ ¾Ë°í¸®Áò °á°ú Ãâ·Â==========
     gotoxy(0, 1);
-    printf(" ===0/1 ë°°ë‚­ ì•Œê³ ë¦¬ì¦˜ ê²°ê³¼===");
+    printf(" ===0/1 ¹è³¶ ¾Ë°í¸®Áò °á°ú===");
     for (i = 1; i < ITEM + 1; i++) {
         gotoxy(0, i+1);
         for (w = 1; w < cost+1; w++) {
@@ -240,10 +243,10 @@ int knapsack(ItemType* bag,ItemType* head,int cost) {
         }
         
     }
-    //==========ë°°ë‚­ì— í¬í•¨ëœ ìš”ì†Œ í™•ì¸ ì•Œê³ ë¦¬ì¦˜==========
+    //==========¹è³¶¿¡ Æ÷ÇÔµÈ ¿ä¼Ò È®ÀÎ ¾Ë°í¸®Áò==========
 
     w = cost;
-    int include[ITEM + 1] = { 0 };//í¬í•¨ ë¯¸í¬í•¨ ë¦¬ìŠ¤íŠ¸
+    int include[ITEM + 1] = { 0 };//Æ÷ÇÔ ¹ÌÆ÷ÇÔ ¸®½ºÆ®
     
     while(w){
         i = ITEM;
@@ -261,13 +264,13 @@ int knapsack(ItemType* bag,ItemType* head,int cost) {
             w--;
         }
     }
-    //==========ë™ì  ë°°ì—´ í•´ì œ==========
+    //==========µ¿Àû ¹è¿­ ÇØÁ¦==========
     for(int i=0;i<ITEM+1;i++){
         free(wp[i]);
     }
     free(wp);
-    //==========ë°°ë‚­ í¬í•¨==========
-    gotoxy(0, 9); printf("===ìµœì  ë¬¼ê±´ ë¦¬ìŠ¤íŠ¸===");
+    //==========¹è³¶ Æ÷ÇÔ==========
+    gotoxy(0, 9); printf("===ÃÖÀû ¹°°Ç ¸®½ºÆ®===");
     gotoxy(0, 10);
     printf("[1] [2] [3] [4] [5] [6]");
     gotoxy(0, 11);
@@ -281,14 +284,14 @@ int knapsack(ItemType* bag,ItemType* head,int cost) {
         }
         printf(" ");
     }
-    //==========ìµœì í•´ì™€ ìœ ì € ë°°ë‚­ ë¹„êµ==========
+    //==========ÃÖÀûÇØ¿Í À¯Àú ¹è³¶ ºñ±³==========
     int iq =1;
     int x, y;
     
     x = 35;
     y = 1;
     
-    gotoxy(x, y++); printf("==================ìµœì í•´===================");
+    gotoxy(x, y++); printf("==================ÃÖÀûÇØ===================");
     for (int j = 0; j < ITEM + 1; j++) {
         if (include[j]) {
             gotoxy(x, y++);
@@ -298,23 +301,23 @@ int knapsack(ItemType* bag,ItemType* head,int cost) {
     }
     y++;
     gotoxy(x, y++);
-    printf("==================ì´ ê°€ì¹˜==================\n");
+    printf("==================ÃÑ °¡Ä¡==================\n");
     gotoxy(x, y++);
-    printf("ì´ ê°€ì¹˜: [%d]\n", bestSolution);
+    printf("ÃÑ °¡Ä¡: [%d]\n", bestSolution);
     gotoxy(x, y++);
-    printf("==================ì´ ë¬´ê²Œ==================\n");
+    printf("==================ÃÑ ¹«°Ô==================\n");
     gotoxy(x, y++);
-    printf("ì´ ë¬´ê²Œ: [%d]", bestSolution_weight);
+    printf("ÃÑ ¹«°Ô: [%d]", bestSolution_weight);
     gotoxy(x, y++); printf("===========================================");
 
-    //===ë¹„êµ===
-    if (userSolution == bestSolution && userCap <= bestSolution_weight) { //ìœ ì €ì˜ í•´ê°€ ìµœì í•´ì´ë©´ ì°¸ ë°˜í™˜
+    //===ºñ±³===
+    if (userSolution == bestSolution && userCap <= bestSolution_weight) { //À¯ÀúÀÇ ÇØ°¡ ÃÖÀûÇØÀÌ¸é Âü ¹İÈ¯
         return 1;
     }
     return 0;
 }
 
-//============ê°ì‹œ í™”ë©´ ì¶œë ¥============
+//============°¨½Ã È­¸é Ãâ·Â============
 void print_monitoring(FILE* fp) {
     gotoxy(3, 3);
     char print_temp[256];
@@ -325,36 +328,39 @@ void print_monitoring(FILE* fp) {
     rewind(fp);
 }
 
-//============ê²Œì„ ì˜¤ë²„============
+//============°ÔÀÓ ¿À¹ö============
 void game_over() {
     system("cls");
     gotoxy(30, 15);
-    printf("ì¡ì•˜ë‹¤ ìš”ë†ˆ!\n");
+    printf("Àâ¾Ò´Ù ¿ä³ğ!\n");
+    Sleep(2000);
+    gotoxy(30, 16);
+    printf("Ã³À½ºÎÅÍ ´Ù½ÃÇÏ¼¼¿ä");
     Sleep(2000);
     print_monitoring(fp_gameover);
     Sleep(2000);
     main();
-    //retryí•  ìˆ˜ ìˆë„ë¡ ë§Œë“¤ë‹¤ê°€ ì¤‘ë‹¨
+    //retryÇÒ ¼ö ÀÖµµ·Ï ¸¸µé´Ù°¡ Áß´Ü
 }
 void game_clear() {
     gotoxy(1, 1);
-    printf("í›”ì³ê°„ ë¬¼ê±´ë“¤ì´ í˜•íƒì´ë¥¼ ë§Œì¡±ì‹œí‚¨ ê²ƒ ê°™ë‹¤."); getchar();
-    printf("í˜•íƒì´ê°€ ìŠ¬ë©°ì‹œ ë‹¤ê°€ì™€ ë‚´ ì–´ê¹¨ë¥¼ ê°€ë³ê²Œ ë‘ë“œë¦¬ë©° ë§í–ˆë‹¤."); getchar();
-    printf("ë„ˆë„ ì´ì œ ë‚´ì¼ë¶€í„° í”¼ë°© ê°€ì"); getchar();
-    printf("ëª¨ë‘ê°€ ë³´ëŠ” ì•ì—ì„œ ì¼ì›”ì´ˆ ì¼ì§± í´ëŸ½ì— ë“¤ì–´ê°”ë‹¤..!"); getchar();
-    printf("ë‚˜ë„ [í—˜ë©œ] ì…ì„ ìˆ˜ ìˆë‹¤êµ¬..!"); getchar();
+    printf("ÈÉÃÄ°£ ¹°°ÇµéÀÌ ÇüÅÃÀÌ¸¦ ¸¸Á·½ÃÅ² °Í °°´Ù."); getchar();
+    printf("ÇüÅÃÀÌ°¡ ½½¸ç½Ã ´Ù°¡¿Í ³» ¾î±ú¸¦ °¡º±°Ô µÎµå¸®¸ç ¸»Çß´Ù."); getchar();
+    printf("³Êµµ ÀÌÁ¦ ³»ÀÏºÎÅÍ ÇÇ¹æ °¡ÀÚ"); getchar();
+    printf("¸ğµÎ°¡ º¸´Â ¾Õ¿¡¼­ ÀÏ¿ùÃÊ ÀÏÂ¯ Å¬·´¿¡ µé¾î°¬´Ù..!"); getchar();
+    printf("³ªµµ [Çè¸á] ÀÔÀ» ¼ö ÀÖ´Ù±¸..!"); getchar();
     Sleep(1000);
     system("cls");
     exit(0);
 }
 void game_fail() {
     gotoxy(1, 1);
-    printf("ì‹¤ë‚´í™” ê°€ë°© ì•ˆì„ ë“¤ì—¬ë‹¤ ë³¸ í˜•íƒì´ì˜ ë‚¯ë¹›ì´ ì–´ë‘ì›Œì¡Œë‹¤.\n"); getchar();
-    printf("ì§„ì§œ xëë‹¤...\n"); getchar();
-    printf("í˜•íƒì´ê°€ ê¹Šì€ í•œìˆ¨ì„ ë‚´ë±‰ìœ¼ë©° ë§í–ˆë‹¤.\n"); getchar();
-    printf("[ë„Œ ì•ˆë˜ê² ë‹¤, ì•ìœ¼ë¡œ ì•„ì¹¨ ìš°ìœ  ê¸‰ì‹ì€ ë„ˆê°€ ê°€ì ¸ì™€ë¼]\n"); getchar();
-    printf("[ì œí‹° ì—†ìœ¼ë©´ ë’¤ì§„ë‹¤]\n"); getchar();
-    printf("ëª¨ë‘ê°€ ë³´ëŠ” ì•ì—ì„œ ì¼ì›”ì´ˆ ìµœê³  ì¡´ì—„ ì°ë”°ë¡œ ë“±ê·¹í–ˆë‹¤.\n"); getchar();
+    printf("½Ç³»È­ °¡¹æ ¾ÈÀ» µé¿©´Ù º» ÇüÅÃÀÌÀÇ ³¸ºûÀÌ ¾îµÎ¿öÁ³´Ù.\n"); getchar();
+    printf("ÁøÂ¥ xµÆ´Ù...\n"); getchar();
+    printf("ÇüÅÃÀÌ°¡ ±íÀº ÇÑ¼ûÀ» ³»¹ñÀ¸¸ç ¸»Çß´Ù.\n"); getchar();
+    printf("[³Í ¾ÈµÇ°Ú´Ù, ¾ÕÀ¸·Î ¾ÆÄ§ ¿ìÀ¯ ±Ş½ÄÀº ³Ê°¡ °¡Á®¿Í¶ó]\n"); getchar();
+    printf("[Á¦Æ¼ ¾øÀ¸¸é µÚÁø´Ù]\n"); getchar();
+    printf("¸ğµÎ°¡ º¸´Â ¾Õ¿¡¼­ ÀÏ¿ùÃÊ ÃÖ°í Á¸¾ö Âğµû·Î µî±ØÇß´Ù.\n"); getchar();
     Sleep(1000);
     system("cls");
     exit(0);
@@ -370,7 +376,7 @@ void keyIn() {
         spaceCount--;
     }
 }
-//===========ê°ì‹œ í•¨ìˆ˜=============
+//===========°¨½Ã ÇÔ¼ö=============
 int monitoring() {
 
     system("cls");
@@ -378,22 +384,22 @@ int monitoring() {
     srand(time(NULL));
 
     int endTime, startTime, monitorTime, random;
-    char bar = '=';//ë°” ë¬¸ì
-    char blank = ' ';//ê³µë°±
-    const int MAX = 500; //ìµœëŒ€ ì¹´ìš´íŠ¸ ìˆ˜
-    const int SPEED = 35; //íƒ€ì´ë¨¸ ìŠ¤í”¼ë“œ
-    int count = 0;  //íƒ€ì´ë¨¸ ì¹´ìš´íŠ¸ ë³€ìˆ˜
-    float tick = (float)100 / LEN; //1í‹± = 5í¼ì„¼íŠ¸
-    int bar_count;      //ë°” ê°¯ìˆ˜
-    int blank_count = 0;//ê³µë°± ê°¯ìˆ˜
-    float percent; //í¼ì„¼í…Œì´ì§€ ë³€ìˆ˜
+    char bar = '=';//¹Ù ¹®ÀÚ
+    char blank = ' ';//°ø¹é
+    const int MAX = 500; //ÃÖ´ë Ä«¿îÆ® ¼ö
+    const int SPEED = 35; //Å¸ÀÌ¸Ó ½ºÇÇµå
+    int count = 0;  //Å¸ÀÌ¸Ó Ä«¿îÆ® º¯¼ö
+    float tick = (float)100 / LEN; //1Æ½ = 5ÆÛ¼¾Æ®
+    int bar_count;      //¹Ù °¹¼ö
+    int blank_count = 0;//°ø¹é °¹¼ö
+    float percent; //ÆÛ¼¾Å×ÀÌÁö º¯¼ö
 
 
 
     while (count <= MAX) {
 
         gotoxy(0, 0);
-        //íƒ€ì´ë¨¸ê°€ ì§„í–‰ë˜ëŠ” ë™ì•ˆ ìˆ˜í–‰
+        //Å¸ÀÌ¸Ó°¡ ÁøÇàµÇ´Â µ¿¾È ¼öÇà
 
         //==============================================
         printf("\r%d/%d [", MAX, MAX - count);
@@ -403,7 +409,7 @@ int monitoring() {
             blank_count = LEN - bar_count;
             if (blank_count > i) {
                 printf("%c", bar);
-            }                       //íƒ€ì´ë¨¸ ê³„ì‚° ë° ì¶œë ¥ ë¶€ë¶„
+            }                       //Å¸ÀÌ¸Ó °è»ê ¹× Ãâ·Â ºÎºĞ
             else {
                 printf("%c", blank);
             }
@@ -412,35 +418,35 @@ int monitoring() {
 
         Sleep(SPEED);
 
-        print_monitoring(fp_closeEye);//ì•„ìŠ¤í‚¤ ì•„íŠ¸ í™”ë©´ ì¶œë ¥
+        print_monitoring(fp_closeEye);//¾Æ½ºÅ° ¾ÆÆ® È­¸é Ãâ·Â
         printSpaceCount();
         if (_kbhit()) {
             keyIn();
         }
-        random = rand() % DIFFICULTY + 1;//1~100ì¤‘ 
+        random = rand() % DIFFICULTY + 1;//1~100Áß 
         //===========================================================
-        if (random == 200) {//200ì´ ë‚˜ì˜¤ë©´ ê°ì‹œ ëª¨ë“œ
+        if (random == 200) {//200ÀÌ ³ª¿À¸é °¨½Ã ¸ğµå
 
             endTime = (unsigned)time(NULL);
 
-            monitorTime = rand() % 4 + 1; //1ì´ˆ~4ì´ˆ ê°ì‹œ
+            monitorTime = rand() % 4 + 1; //1ÃÊ~4ÃÊ °¨½Ã
 
             endTime += monitorTime;
             print_monitoring(fp_question);
-            Sleep(500);
-            while (_kbhit()) {  //ê°ì‹œ ëª¨ë“œì—ì„œ kbhit ì •ìƒ ê²€ì‚¬ë¥¼ ìœ„í•´ ë²„í¼ë¥¼ ì‚¬ì „ì— ë¹„ìš°ëŠ” ì‘ì—…
+            Sleep(250);
+            while (_kbhit()) {  //°¨½Ã ¸ğµå¿¡¼­ kbhit Á¤»ó °Ë»ç¸¦ À§ÇØ ¹öÆÛ¸¦ »çÀü¿¡ ºñ¿ì´Â ÀÛ¾÷
                 _getch();
             }
 
-            do {            //ê°ì‹œ ì§„í–‰
+            do {            //°¨½Ã ÁøÇà
                 startTime = (unsigned)time(NULL);
 
-                print_monitoring(fp_openEye);  //ê°ì‹œ í™”ë©´ ì „í™˜
+                print_monitoring(fp_openEye);  //°¨½Ã È­¸é ÀüÈ¯
 
-                if (_kbhit()) { //í‚¤ë³´ë“œê°€ ëˆŒë¦¬ë©´ ë°œê° ë¨
+                if (_kbhit()) { //Å°º¸µå°¡ ´­¸®¸é ¹ß°¢ µÊ
                     game_over();
                 }
-                if (endTime - startTime <= 0) { //ê°ì‹œ ì‹œê°„ì´ ëë‚˜ë©´ ê°ì‹œ ì¢…ë£Œ
+                if (endTime - startTime <= 0) { //°¨½Ã ½Ã°£ÀÌ ³¡³ª¸é °¨½Ã Á¾·á
                     system("cls");
                     break;
                 }
@@ -450,7 +456,7 @@ int monitoring() {
 
         count++;
         if (spaceCount <= 0) {
-            return 1;//í›”ì¹˜ê¸° ì„±ê³µ
+            return 1;//ÈÉÄ¡±â ¼º°ø
         }
     }
     
@@ -458,8 +464,8 @@ int monitoring() {
 }
 
 void init() {
-    system("mode con cols =50 lines = 100 | title ì¼ì›”ì´ˆ ì¼ì§± ë˜ê¸°");
-    //ì»¤ì„œ ê¹œë¹¡ì„ ì—†ì• ê¸°
+    system("mode con cols =30 lines = 130 | title ÀÏ¿ùÃÊ ÀÏÂ¯ µÇ±â");
+    //Ä¿¼­ ±ôºıÀÓ ¾ø¾Ö±â
     CONSOLE_CURSOR_INFO cursorInfo = { 0, };
     cursorInfo.bVisible = 0;
     cursorInfo.dwSize = 1;
@@ -473,35 +479,35 @@ int selectToStealItem(ItemType* head,ItemType* inventory) {
     }
     while (1) {
         gotoxy(100, 1);
-        printf("*í›”ì¹˜ê¸° ì¢…ë£Œ[0ë²ˆ]*");
+        printf("*ÈÉÄ¡±â Á¾·á[0¹ø]*");
         gotoxy(65, 3);
-        printf(">>í›”ì¹  ë¬¼ê±´ì˜ ë²ˆí˜¸ ì…ë ¥>>");
+        printf(">>ÈÉÄ¥ ¹°°ÇÀÇ ¹øÈ£ ÀÔ·Â>>");
         scanf_s("%d", &itemNum);
         if (0 < itemNum && itemNum < 7) {
             if (head->itemList[itemNum]->isStolen) {
                 gotoxy(65, 4);
-                printf("%sëŠ” ì´ë¯¸ í›”ì¹œ ë¬¼ê±´ì…ë‹ˆë‹¤.", head->itemList[itemNum]->name);
+                printf("%s´Â ÀÌ¹Ì ÈÉÄ£ ¹°°ÇÀÔ´Ï´Ù.", head->itemList[itemNum]->name);
                 Sleep(1000);
                 system("cls");
                 print_totalItemList(head, inventory);
             }
-            else if ((inventory->capacity - head->itemList[itemNum]->weight) < 0) { //ë°°ë‚­ì˜ ìš©ëŸ‰ì„ ì´ˆê³¼í•˜ë©´ ì˜ˆì™¸ì²˜ë¦¬
+            else if ((inventory->capacity - head->itemList[itemNum]->weight) < 0) { //¹è³¶ÀÇ ¿ë·®À» ÃÊ°úÇÏ¸é ¿¹¿ÜÃ³¸®
                 gotoxy(65, 4);
-                printf("ì§ì´ ë„ˆë¬´ ë§ìŠµë‹ˆë‹¤.");
+                printf("ÁüÀÌ ³Ê¹« ¸¹½À´Ï´Ù.");
                 Sleep(1000);
                 system("cls");
                 print_totalItemList(head, inventory);
             }
             else {
-                return 0; //í›”ì¹˜ê¸° ëª¨ë“œ ê³„ì†
+                return 0; //ÈÉÄ¡±â ¸ğµå °è¼Ó
             }
         }
         else if (itemNum == 0) {
-            return 1; //í›”ì¹˜ê¸° ëª¨ë“œ ì¢…ë£Œ
+            return 1; //ÈÉÄ¡±â ¸ğµå Á¾·á
         }
         else {
             gotoxy(65, 4);
-            printf("ìœ íš¨í•œ ë²ˆí˜¸ë¥¼ ì…ë ¥í•˜ì„¸ìš”.(1~6)");
+            printf("À¯È¿ÇÑ ¹øÈ£¸¦ ÀÔ·ÂÇÏ¼¼¿ä.(1~6)");
             Sleep(1000);
             system("cls");
             print_totalItemList(head, inventory);
@@ -516,43 +522,43 @@ void free_item(ItemType* head) {
 }
 void print_title() {
     gotoxy(0, 0);
-    printf("â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€â– \n");
-    printf("â– ã€€ã€€ã€€ã€€                    ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ â– â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€                     â– â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€                     â– â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€                     â– â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€                     â– â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€                     â– â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€                    â– â– ã€€ã€€ã€€ â– â– ã€€ã€€ã€€  â– â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€       â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€ã€€                    â– â– â– â– ã€€ã€€ â– â– ã€€ã€€  â– â– â– â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€                    â– â– â– â– â– â– ã€€ â– â– ã€€  â– â– â– â– â– â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€ã€€                    â– â– â– â– ã€€â–  â– â–  â– ã€€ â– â– â– â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€     â– \n");
-    printf("â– ã€€ã€€ã€€ã€€                    â– ã€€ã€€â– â– ã€€ â– â– â– â– â– â– ã€€  â– â– ã€€  â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ â– \n");
-    printf("â– ã€€ã€€ã€€ã€€                      â– ã€€ã€€    â– â– ã€€ã€€ã€€â– â– ã€€ã€€ã€€ã€€ â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ â– \n");
-    printf("â– ã€€ã€€ã€€ã€€                        â– â– â– â– ã€€â– ã€€ã€€ã€€â– ã€€â– â– â– â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€â– \n");
-    printf("â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€                    â– ã€€ã€€ã€€â– ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€â– \n");
-    printf("â–                                           â–       â–                                           â– \n");
-    printf("â–   ã€€ã€€ã€€ã€€ã€€ã€€ã€€                          â–       â–                                           â– \n");
-    printf("â–      ã€€ã€€                                 â–       â–                                           â– \n");
-    printf("â–                                           â–       â–                                           â– \n");
-    printf("â–                                           â–       â–                                           â– \n");
-    printf("â–                                                                                               â– \n");
-    printf("â–                                     PRESS ANY KEY TO START                                    â– \n");
-    printf("â–                                                                                               â– \n");
-    printf("â–                                                                                               â– \n");
-    printf("â–                                                                                               â– \n");
-    printf("â–                                                                                               â– \n");
-    printf("â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– â– \n");
+    printf("¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡                    ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡                     ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡                     ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡                     ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡                     ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡                     ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡                    ¡á¡á¡¡¡¡¡¡ ¡á¡á¡¡¡¡¡¡  ¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡       ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡                    ¡á¡á¡á¡á¡¡¡¡ ¡á¡á¡¡¡¡  ¡á¡á¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡                    ¡á¡á¡á¡á¡á¡á¡¡ ¡á¡á¡¡  ¡á¡á¡á¡á¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡                    ¡á¡á¡á¡á¡¡¡á ¡á¡á ¡á¡¡ ¡á¡á¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡     ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡                    ¡á¡¡¡¡¡á¡á¡¡ ¡á¡á¡á¡á¡á¡á¡¡  ¡á¡á¡¡  ¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡                      ¡á¡¡¡¡    ¡á¡á¡¡¡¡¡¡¡á¡á¡¡¡¡¡¡¡¡ ¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ ¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡                        ¡á¡á¡á¡á¡¡¡á¡¡¡¡¡¡¡á¡¡¡á¡á¡á¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡á\n");
+    printf("¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡                    ¡á¡¡¡¡¡¡¡á¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡á\n");
+    printf("¡á                                          ¡á      ¡á                                          ¡á\n");
+    printf("¡á  ¡¡¡¡¡¡¡¡¡¡¡¡¡¡                          ¡á      ¡á                                          ¡á\n");
+    printf("¡á     ¡¡¡¡                                 ¡á      ¡á                                          ¡á\n");
+    printf("¡á                                          ¡á      ¡á                                          ¡á\n");
+    printf("¡á                                          ¡á      ¡á                                          ¡á\n");
+    printf("¡á                                                                                              ¡á\n");
+    printf("¡á                                    PRESS ANY KEY TO START                                    ¡á\n");
+    printf("¡á                                                                                              ¡á\n");
+    printf("¡á                                                                                              ¡á\n");
+    printf("¡á                                                                                              ¡á\n");
+    printf("¡á                                                                                              ¡á\n");
+    printf("¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á¡á\n");
 
     getchar();
     system("cls");
 }
 
-void main(void) {
+int main(void) {
     init();
 
     ItemType List;
@@ -560,50 +566,60 @@ void main(void) {
     init_list(&bag);
     init_list(&List);
 
-    //ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ ìƒì„±
+    //¾ÆÀÌÅÛ ¸®½ºÆ® »ı¼º
     insert_itemList(&List, create_item(" ", 0, 0,0));
-    insert_itemList(&List, create_item("ì œí‹°", 2, 1,1));
-    insert_itemList(&List, create_item("ìœ í¬ì™• ì¹´ë“œ", 5, 4,4));
-    insert_itemList(&List, create_item("ë©”ì´í”Œ ë”±ì§€", 3, 2,3));
-    insert_itemList(&List, create_item("ì°¨ì¹´ë‹ˆ", 4, 4,4));
-    insert_itemList(&List, create_item("ì½©ìˆœì´ ì¼ê¸°ì¥", 2, 3,2));
-    insert_itemList(&List, create_item("ë§¤ë¯¸ ìì„", 6, 5,5));
+    insert_itemList(&List, create_item("Á¦Æ¼", 2, 1,1));
+    insert_itemList(&List, create_item("À¯Èñ¿Õ Ä«µå", 5, 4,4));
+    insert_itemList(&List, create_item("¸ŞÀÌÇÃ µüÁö", 3, 2,3));
+    insert_itemList(&List, create_item("Â÷Ä«´Ï", 4, 4,4));
+    insert_itemList(&List, create_item("Äá¼øÀÌ ÀÏ±âÀå", 2, 3,2));
+    insert_itemList(&List, create_item("¸Å¹Ì ÀÚ¼®", 6, 5,5));
 
 
-    //ì´ë¯¸ì§€ íŒŒì¼ êµ¬ì¡°ì²´ í¬ì¸í„° ìƒì„±
+    //ÀÌ¹ÌÁö ÆÄÀÏ ±¸Á¶Ã¼ Æ÷ÀÎÅÍ »ı¼º
 
     fp_closeEye = fopen("ClosedEye.txt", "rt");
     fp_openEye = fopen("OpenEye.txt", "rt");
     fp_gameover = fopen("gameover.txt", "rt");
     fp_question = fopen("questionMark.txt", "rt");
+    fp_happyEnding = fopen("HappyEnding.txt", "rt");
+    fp_badEnding = fopen("BadEnding.txt", "rt");
 
     if (fp_closeEye == NULL) {
-        fprintf(stderr, "íŒŒì¼1 ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨");
+        fprintf(stderr, "ÆÄÀÏ1 ºÒ·¯¿À±â ½ÇÆĞ");
         return 1;
     }
     if (fp_openEye == NULL) {
-        fprintf(stderr, "íŒŒì¼2 ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨");
+        fprintf(stderr, "ÆÄÀÏ2 ºÒ·¯¿À±â ½ÇÆĞ");
         return 1;
     }
     if (fp_gameover == NULL) {
-        fprintf(stderr, "íŒŒì¼3 ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨");
+        fprintf(stderr, "ÆÄÀÏ3 ºÒ·¯¿À±â ½ÇÆĞ");
         return 1;
     }
 
     if (fp_question == NULL) {
-        fprintf(stderr, "íŒŒì¼5 ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨");
+        fprintf(stderr, "ÆÄÀÏ5 ºÒ·¯¿À±â ½ÇÆĞ");
+        return 1;
+    }
+    if (fp_happyEnding == NULL) {
+        fprintf(stderr, "ÆÄÀÏ6 ºÒ·¯¿À±â ½ÇÆĞ");
+        return 1;
+    }
+    if (fp_badEnding == NULL) {
+        fprintf(stderr, "ÆÄÀÏ7 ºÒ·¯¿À±â ½ÇÆĞ");
         return 1;
     }
 
     print_title();
-    //í›”ì¹˜ê¸° ê²Œì„ ì§„í–‰
+    //ÈÉÄ¡±â °ÔÀÓ ÁøÇà
     while (1) {
 
         system("cls");
 
-        print_totalItemList(&List,&bag);//ì•„ì´í…œ ëª©ë¡ ì¶œë ¥
+        print_totalItemList(&List,&bag);//¾ÆÀÌÅÛ ¸ñ·Ï Ãâ·Â
 
-        if (selectToStealItem(&List, &bag))//í›”ì¹  ìƒí’ˆ ë²ˆí˜¸ ì…ë ¥ë°›ê¸°
+        if (selectToStealItem(&List, &bag))//ÈÉÄ¥ »óÇ° ¹øÈ£ ÀÔ·Â¹Ş±â
             break;
         spaceCount = 20 * List.itemList[itemNum]->difficulty;
 
@@ -617,40 +633,68 @@ void main(void) {
             List.itemList[itemNum]->isStolen = true;
             gotoxy(35, 10);
 
-            printf("%së¥¼ í›”ì¹˜ëŠ”ë° ì„±ê³µí–ˆë‹¤!", List.itemList[itemNum]->name);
+            printf("%s¸¦ ÈÉÄ¡´Âµ¥ ¼º°øÇß´Ù!", List.itemList[itemNum]->name);
             Sleep(2000);
         }
         else {
             system("cls");
             gotoxy(35, 10);
-            printf("%së¥¼ í›”ì¹˜ì§€ ëª»í–ˆë‹¤..ë‹¤ìŒ ê¸°íšŒë¥¼ ë…¸ë ¤ë³´ì", List.itemList[itemNum]->name);
+            printf("%s¸¦ ÈÉÄ¡Áö ¸øÇß´Ù..´ÙÀ½ ±âÈ¸¸¦ ³ë·Áº¸ÀÚ", List.itemList[itemNum]->name);
             Sleep(2000);
         }
 
     }
     system("cls");
-    //ê²°ê³¼ ë³´ê¸°
+    //°á°ú º¸±â
     int i = 0;
     while (i < 3) {
-        gotoxy(35, 13); printf("ì†Œì§€í’ˆ ê²€ì‚¬ì¤‘."); Sleep(500);
-        gotoxy(35, 13); printf("ì†Œì§€í’ˆ ê²€ì‚¬ì¤‘.."); Sleep(500);
-        gotoxy(35, 13); printf("ì†Œì§€í’ˆ ê²€ì‚¬ì¤‘..."); Sleep(500);
+        gotoxy(35, 13); printf("¼ÒÁöÇ° °Ë»çÁß."); Sleep(500);
+        gotoxy(35, 13); printf("¼ÒÁöÇ° °Ë»çÁß.."); Sleep(500);
+        gotoxy(35, 13); printf("¼ÒÁöÇ° °Ë»çÁß..."); Sleep(500);
         system("cls");
         i++;
     }
 
     print_userItemList(&bag);
     int isClear = knapsack(&bag,&List, cost);
-
+    Sleep(5000);
+    if (isClear) {
+        system("cls");
+    }
     fclose(fp_closeEye);
     fclose(fp_openEye);
     fclose(fp_gameover);
 
-    free_item(&List); //ë™ì í• ë‹¹ í•´ì œ
-    //ê²Œì„ ì—”ë”© ë¯¸êµ¬í˜„
+    free_item(&List); //µ¿ÀûÇÒ´ç ÇØÁ¦
+    system("cls");
+    Sleep(1000);
+    int x = 1;
+    int y = 1;
+    gotoxy(x, y);
+    printf("ÈÉÃÄ°£ ¹°°ÇµéÀÌ ÇüÅÃÀÌ¸¦ ¸¸Á·½ÃÅ² °Í °°´Ù."); Sleep(3000);
+    y += 2;
+    gotoxy(x, y);
+    printf("ÇüÅÃÀÌ°¡ ½½¸ç½Ã ´Ù°¡¿Í ³» ¾î±ú¸¦ °¡º±°Ô µÎµå¸®¸ç ¸»Çß´Ù."); Sleep(3000);
+    y += 2;
+    gotoxy(x, y);
+    printf("[¿À´Ã ÇĞ±³ ³¡³ª°í ÀÎÅÍÆÎÀ¸·Î ¿Í]");  Sleep(3000);
+    y += 2;
+    gotoxy(x, y);
+    printf("¸ğµÎ°¡ º¸´Â ¾Õ¿¡¼­ ÀÏ¿ùÃÊ ÀÏÂ¯ Å¬·´¿¡ µé¾î°¬´Ù..!"); Sleep(3000);
+    y += 2;
+    gotoxy(x, y);
+    printf("³ªµµ [Çè¸á] ÀÔÀ» ¼ö ÀÖ´Ù±¸..!"); Sleep(3000);
+    Sleep(1000);
+    system("cls");
+    print_monitoring(fp_happyEnding);
+    Sleep(3000);
+    print_monitoring(fp_badEnding);
+    exit(0);
+
+    //°ÔÀÓ ¿£µù ¹Ì±¸Çö
    /* if (isClear) {
         game_clear();
     }
     game_fail();*/
-    
+    return 0;
 }
