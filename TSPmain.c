@@ -43,6 +43,11 @@ typedef struct EdgeList {
 	int size;
 }EdgeList; 
 
+typedef struct Point {
+	int x;
+	int y;
+}Point;
+
 //각 정점 가중치
 int weight_arr[SIZE][SIZE] = {
 {0,1,1,1,1},
@@ -91,9 +96,13 @@ char map[MAPROW][MAPCOL] = {
 	{"11111111111111111111111111111111111111111111111111111"}
 };
 
-//MST만들 때 root값 저장
+// 전역변수
 int vertex_arr[SIZE] = { 0,1,2,3,4};
-
+int count = 0;
+int tsp_sum = 0;
+int player_path[SIZE + 1];
+int player_sum = 0;
+Point vertex_point[SIZE];
 
 // 콘솔 텍스트 색상 변경해주는 함수
 void setColor(unsigned short text) {
@@ -112,134 +121,142 @@ void sort_edge(EdgeList* edgeList); // 가중치 기준으로 정렬
 int find_edgeList(EdgeList* edgeList, int v); //v에서 출발하는 edge를 찾음
 void sort_edge_v1(EdgeList* edgeList);
 void delete_edgeList(EdgeList* mst, int index);
+void create_edgeList(EdgeList* edgeList);
 // 맵 출력
 void print_map(EdgeList* edgeList);
 
 //MST구하는 함수들
+void create_MST(EdgeList* edgeList, EdgeList* mst);
 int getParent(int x);
 int check_union_find(int v1, int v2);
 void unionParent(int v1, int v2);
+
 //TSP근사해 구하는 함수들
+void create_TSP(EdgeList* edgeList, EdgeList* mst, EdgeList* stack, int path_arr[]);
 void insert_edgeList_mst(EdgeList* edgeList, Edge* edge);
 void print_path(int path_arr[], int size);
 
+//메인 프로그램
+void projectTSP();
+
+//*******************main*****************************
 int main() {
-	srand(time(NULL)); // 매번 다른 시드값 생성
-
-	system("mode con cols=140 lines=100");
-
-	EdgeList* edgeList = (EdgeList*)malloc(sizeof(EdgeList));
-
-	init_edgeList(edgeList, SIZE);
-
-	// edge 생성
-	for (int i = 0; i < SIZE - 1; i++) {
-		for (int j = i + 1; j < SIZE; j++) {
-			if (weight_arr[i][j] == 1) {
-				Edge* new_edge = (Edge*)malloc(sizeof(Edge));
-				init_edge(new_edge, i, j, rand() % 9 + 1);
-				insert_edgeList(edgeList, new_edge);
-			}
-		}
-	}
-	print_edgeList(edgeList);
-	print_map(edgeList);
-
-	//MST생성
-	sort_edge(edgeList); // 가중치 순으로 정렬
-	EdgeList* mst = (EdgeList*)malloc(sizeof(EdgeList));
-	init_edgeList(mst, SIZE);
-	for (int i = 0; i < edgeList->size; i++) {
-		Edge* tmp = edgeList->list[i];
-		if (check_union_find(tmp->v1, tmp->v2) != TRUE) {
-			insert_edgeList_mst(mst, tmp);
-			unionParent(tmp->v1, tmp->v2);
-		}
-	}
-	
-	printf("===TSP===\n");
-	sort_edge_v1(mst);\
-	int path_arr[SIZE];
-
-	EdgeList* stack = (EdgeList*)malloc(sizeof(EdgeList));
-	init_edgeList(stack, 0);
-	init_edgeList(edgeList, SIZE);
-	int cur_vertex = 0;
-	int count = 0;
-	int tsp_sum = 0;
-	while (stack->size >= 0) {
-		int index = 0;
-		int is_path_input = TRUE;
-		//이미 방문했던 곳이면 기록X
-		for (int i = 0; i <= count; i++) {
-			if (path_arr[i] == cur_vertex) {
-				is_path_input = FALSE;
-				break;
-			}
-		}
-		if (is_path_input == TRUE) {
-			path_arr[count++] = cur_vertex;
-		}
-		// mst에 현재 위치에서 갈 수 있는 곳이 있다면
-		if ((index = find_edgeList(mst, cur_vertex)) != -1) {
-			Edge* new_edge = (Edge*)malloc(sizeof(Edge));
-			*new_edge = *(mst->list[index]);
-			insert_edgeList(stack, new_edge);
-			insert_edgeList(edgeList, new_edge);
-			cur_vertex = mst->list[index]->v2;
-			delete_edgeList(mst, index);
-		}
-		else {
-			if (--stack->size != -1) {
-				cur_vertex = stack->list[stack->size]->v1;
-			}
-		}
-	}
-	path_arr[count++] = 0;
-	print_edgeList(edgeList);
-	for (int i = 1; i <= SIZE+1; i++) {
-		for (int k = 0; k < edgeList->size; k++) {
-			if (edgeList->list[k]->v2 == path_arr[i] && edgeList->list[k]->v1 == path_arr[i - 1]) {
-				tsp_sum += edgeList->list[k]->weight;
-			}
-			if (edgeList->list[k]->v1 == path_arr[i] && edgeList->list[k]->v2 == path_arr[i - 1]) {
-				tsp_sum += edgeList->list[k]->weight;
-			}
-		}
-	}
-
-	print_path(path_arr, count);
-	printf("tsp_sum : %d\n", tsp_sum);
-	int player_input = 0;
-	int player_path[SIZE];
-	int player_sum = 0;
-	player_path[0] = 0;
-	count = 1;
-	while (count < SIZE) {
-		int is_input = TRUE;
-		printf("===현재 이동 경로===\n");
-		print_path(player_path, count);
-		printf("이동 위치 : ");
-		scanf("%d", &player_input);
-		for (int i = 0; i < SIZE; i++) {
-			if (player_path[i] == player_input) {
-				printf("이미 간 곳입니다.\n");
-				is_input = FALSE;
-				break;
-			}
-		}
-		if (is_input == TRUE) {
-			player_path[count++] = player_input;
-		}
-	}
-	printf("===현재 이동 경로===\n");
-	print_path(player_path, count);
-	printf("tsp_sum : %d\n", tsp_sum);
-	free(edgeList);
-	free(mst);
-	free(stack);
-
+	projectTSP();
 	return 0;
+ }
+
+ void projectTSP() {
+	 for (int i = 0; i < SIZE; i++) {
+		 vertex_point[i].x = -10;
+		 vertex_point[i].y = -10;
+	 }
+
+
+	 srand(time(NULL)); // 매번 다른 시드값 생성
+
+	 system("mode con cols=140 lines=100");
+
+	 EdgeList* edgeList = (EdgeList*)malloc(sizeof(EdgeList));
+
+	 init_edgeList(edgeList, SIZE);
+
+	 // edgelist 생성
+	 create_edgeList(edgeList);
+	 //print_edgeList(edgeList);
+
+	 // 맵 출력
+	 print_map(edgeList);
+
+
+
+	 //MST생성
+	 sort_edge(edgeList); // 가중치 순으로 정렬
+	 EdgeList* mst = (EdgeList*)malloc(sizeof(EdgeList));
+	 init_edgeList(mst, SIZE);
+	 create_MST(edgeList, mst);
+
+
+	 sort_edge_v1(mst); \
+		 int path_arr[SIZE + 1];
+
+	 EdgeList* stack = (EdgeList*)malloc(sizeof(EdgeList));
+	 init_edgeList(stack, 0);
+
+	 // **************TSP 근사해 계산*******************
+	 create_TSP(edgeList, mst, stack, path_arr);
+
+
+	 // **********************플레이어 경로 입력******************
+	 int player_input = 0;
+	 player_path[0] = 0;
+	 count = 1;
+	 while (count < SIZE) {
+		 system("cls");
+		 print_map(edgeList);
+		 system("cls");
+		 print_map(edgeList);
+		 int is_input = TRUE;
+		 printf("===현재 이동 경로===\n");
+		 print_path(player_path, count);
+		 printf("이동 위치 : ");
+		 scanf("%d", &player_input);
+		 for (int i = 0; i < SIZE; i++) {
+			 if (player_path[i] == player_input) {
+				 printf("이미 간 곳입니다.\n");
+				 is_input = FALSE;
+				 break;
+			 }
+			 else if (!(0 <= player_input && player_input <= SIZE)) {
+				 printf("잘못입력했습니다.");
+				 is_input = FALSE;
+				 break;
+			 }
+		 }
+		 if (is_input == TRUE) {
+			 player_path[count++] = player_input;
+		 }
+	 }
+	 system("cls");
+	 print_map(edgeList);
+	 system("cls");
+	 print_map(edgeList);
+	 player_path[count++] = 0;
+
+
+
+	 //************* 플레이어 선택 가중치 계산 *****************
+	 printf("===현재 이동 경로===\n");
+	 print_path(player_path, count);
+	 for (int i = 1; i < count; i++) {
+		 for (int j = 0; j < edgeList->size; j++) {
+			 if ((player_path[i - 1] == edgeList->list[j]->v1 && player_path[i] == edgeList->list[j]->v2) ||
+				 player_path[i - 1] == edgeList->list[j]->v2 && player_path[i] == edgeList->list[j]->v1) {
+				 player_sum += edgeList->list[j]->weight;
+				 break;
+			 }
+		 }
+	 }
+
+	 printf("player_sum : %d\n", player_sum);
+	 printf("===tsp_path===\n");
+	 print_path(path_arr, SIZE + 1);
+	 printf("tsp_sum : %d\n", tsp_sum);
+
+	 if (player_sum > tsp_sum) {
+		 printf("근사해보다 큰 값입니다.");
+	 }
+	 else if (player_sum == tsp_sum) {
+		 printf("근사해와 같은 값입니다.");
+	 }
+	 else {
+		 printf("근사해보다 작은 값입니다.");
+	 }
+
+
+	 free(edgeList);
+	 free(mst);
+	 free(stack);
+
  }
 
 void init_edge(Edge* edge, int v1, int v2, int weight) {
@@ -294,6 +311,13 @@ void print_map(EdgeList* edgeList) {
     for (int i = 0; i < MAPROW; i++) {
         for (int j = 0; j < MAPCOL - 1; j++) {
             vertex_num = map[i][j] - 1;
+			setColor(GRAY);
+			for (int k = 0; k < count; k++) {
+				if ((vertex_point[k].x - 1 <= i && i <= vertex_point[k].x + 1)
+					&& (vertex_point[k].y - 3 <= j && j <= vertex_point[k].y + 3)) {
+					setColor(BLUE);
+				}
+			}
 
             switch (map[i][j])
             {
@@ -304,6 +328,14 @@ void print_map(EdgeList* edgeList) {
             default:
                 if ('A' <= map[i][j] && map[i][j] <= 'Z') {
 					setColor(RED);
+					for (int k = 0; k < count; k++) {
+						if (player_path[k] == (map[i][j] - 'A')) {
+							vertex_point[map[i][j] - 'A'].x = i;
+							vertex_point[map[i][j] - 'A'].y = j;
+							setColor(BLUE);
+							break;
+						}
+					}
                     printf("%d ", (map[i][j]) - 'A');
 					setColor(GRAY);
                 }
@@ -335,6 +367,18 @@ int find_edgeList(EdgeList* edgeList, int v) {
 	return -1;
 }
 
+
+void create_MST(EdgeList* edgeList, EdgeList* mst) {
+	for (int i = 0; i < edgeList->size; i++) {
+		Edge* tmp = (Edge*)malloc(sizeof(Edge));
+		*tmp = *edgeList->list[i];
+		if (check_union_find(tmp->v1, tmp->v2) != TRUE) {
+			insert_edgeList_mst(mst, tmp);
+			unionParent(tmp->v1, tmp->v2);
+		}
+	}
+}
+
 void insert_edgeList_mst(EdgeList* edgeList, Edge* edge) {
 	edgeList->list[edgeList->size++] = edge;
 }
@@ -364,9 +408,71 @@ void delete_edgeList(EdgeList* mst, int index) {
 
 }
 
+void create_edgeList(EdgeList* edgeList) {
+	for (int i = 0; i < SIZE - 1; i++) {
+		for (int j = i + 1; j < SIZE; j++) {
+			if (weight_arr[i][j] == 1) {
+				Edge* new_edge = (Edge*)malloc(sizeof(Edge));
+				init_edge(new_edge, i, j, rand() % 9 + 1);
+				insert_edgeList(edgeList, new_edge);
+			}
+		}
+	}
+}
+
 void print_path(int path_arr[], int size) {
 	for (int i = 0; i < size; i++) {
 		printf("%d ", path_arr[i]);
 	}
 	printf("\n");
+}
+
+void create_TSP(EdgeList* edgeList, EdgeList* mst, EdgeList* stack, int path_arr[]) {
+	int cur_vertex = 0;
+	while (stack->size >= 0) {
+		int index = 0;
+		int is_path_input = TRUE;
+		//이미 방문했던 곳이면 기록X
+		for (int i = 0; i <= count; i++) {
+			if (path_arr[i] == cur_vertex) {
+				is_path_input = FALSE;
+				break;
+			}
+		}
+		if (is_path_input == TRUE) {
+			path_arr[count++] = cur_vertex;
+		}
+		// mst에 현재 위치에서 갈 수 있는 곳이 있다면
+		if ((index = find_edgeList(mst, cur_vertex)) != -1) {
+			Edge* new_edge = (Edge*)malloc(sizeof(Edge));
+			*new_edge = *(mst->list[index]);
+			insert_edgeList(stack, new_edge);
+			insert_edgeList(edgeList, new_edge);
+			cur_vertex = mst->list[index]->v2;
+			delete_edgeList(mst, index);
+		}
+		else {
+			if (--stack->size != -1) {
+				cur_vertex = stack->list[stack->size]->v1;
+			}
+		}
+	}
+	path_arr[count++] = 0;
+
+	//print_edgeList(edgeList);
+	for (int i = 1; i <= SIZE + 1; i++) {
+		for (int k = 0; k < edgeList->size; k++) {
+			if (edgeList->list[k]->v2 == path_arr[i] && edgeList->list[k]->v1 == path_arr[i - 1]) {
+				tsp_sum += edgeList->list[k]->weight;
+				break;
+			}
+			if (edgeList->list[k]->v1 == path_arr[i] && edgeList->list[k]->v2 == path_arr[i - 1]) {
+				tsp_sum += edgeList->list[k]->weight;
+				break;
+
+			}
+		}
+	}
+	//print_path(path_arr, count);
+	//printf("tsp_sum : %d\n", tsp_sum);
 }
