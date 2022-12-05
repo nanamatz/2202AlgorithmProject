@@ -194,6 +194,7 @@ int main() {
 		input_color[i] = 15;
 	}
 
+	// 187은 map에서 아웃라인'o'를 칠할 색깔
 	input_color[14] = 187;
 	node_color[14] = 187;
 
