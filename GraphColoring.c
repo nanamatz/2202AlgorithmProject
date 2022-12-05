@@ -116,8 +116,7 @@ void print_KMP(int patternLength, char patternNum) {
 }
 
 /// <summary>
-/// KMP 알고리즘 : 길이가 M인 문자열 내에 길이가 N인 단어가 있는지 확인하는 알고리즘
-/// KMP 알고리즘을 이용해 map을 color 배열에 따라 출력해준다.
+/// map을 color 배열에 따라 출력해준다.
 /// </summary>
 /// <param name="input_color">map의 색깔(0~12), 14:line color</param>
 void KMP(int* input_color) {
