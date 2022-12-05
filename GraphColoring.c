@@ -102,11 +102,11 @@ int GraphColoring(int* node_color, int node_index, int color) {
 	return promise;
 }
 /// <summary>
-/// KMP 함수에서 patternLength만큼 patternNum을 setColor해서 출력
+/// GC_Print 함수에서 patternLength만큼 patternNum을 setColor해서 출력
 /// </summary>
 /// <param name="patternLength">patternNum이 반복되는 횟수</param>
 /// <param name="patternNum">출력할 값</param>
-void print_KMP(int patternLength, char patternNum) {
+void PrintPattern(int patternLength, char patternNum) {
 	
 	for (int i = 0; i <= patternLength; i++) {
 		printf("%c", patternNum);
@@ -116,13 +116,12 @@ void print_KMP(int patternLength, char patternNum) {
 }
 
 /// <summary>
-/// map을 color 배열에 따라 출력해준다.
+/// 패턴 테이블을 이용하여 map을 color 배열에 따라 출력해준다.
 /// </summary>
 /// <param name="input_color">map의 색깔(0~12), 14:line color</param>
-void KMP(int* input_color) {
+void GC_PrintMap(int* input_color) {
 	for (int i = 0; i < GC_MAP_ROW; i++) {
-		int currentCharPoint = 0;
-		int dismatchPoint = 0;
+		int currentCharPoint = 3;
 		int patternTable[20] = {0, };
 		int patternTableIdx = 0;
 
@@ -134,14 +133,14 @@ void KMP(int* input_color) {
 			}
 			else { // 같지 않다면
 				setColor(input_color[map[i][currentCharPoint] - 'a']);
-				print_KMP(patternTable[patternTableIdx], map[i][currentCharPoint]);
+				PrintPattern(patternTable[patternTableIdx], map[i][currentCharPoint]);
 				currentCharPoint++;
 				patternTableIdx++;
 			}
 			
 		}
 		setColor(input_color[map[i][currentCharPoint] - 'a']);
-		print_KMP(patternTable[patternTableIdx], map[i][currentCharPoint]);
+		PrintPattern(patternTable[patternTableIdx], map[i][currentCharPoint]);
 		setColor(15);
 		printf("\n");
 	}
@@ -159,7 +158,7 @@ int CheckAnswer(int* node_color, int* input_color) {
 	int success = 1;
 	printf("제출하신 정답입니다.\n");
 	Sleep(1000);
-	KMP(input_color);
+	GC_PrintMap(input_color);
 	Sleep(1000);
 
 	printf("정답은...\n");
@@ -193,12 +192,11 @@ int main() {
 		input_color[i] = 15;
 	}
 
-	// 187은 map에서 아웃라인'o'를 칠할 색깔
 	input_color[14] = 187;
 	node_color[14] = 187;
 
 	for (int i = 0; i < 12; i++) {
-		KMP(input_color);
+		GC_PrintMap(input_color);
 		printf("%c번 칸에 색칠할 색깔(0, 1, 2, 3, 4 ...)을 입력해주세요. (단, 1번 칸에는 0을, 2번 칸에는 1을 칠해주세요.)\n", i + 'a');
 		printf(">> ");
 		scanf_s(" %d", &input_color[i]);
