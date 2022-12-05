@@ -163,7 +163,7 @@ int CheckAnswer(int* node_color, int* input_color) {
 
 	printf("정답은...\n");
 	Sleep(1000);
-	KMP(node_color);
+	GC_PrintMap(node_color);
 
 
 
