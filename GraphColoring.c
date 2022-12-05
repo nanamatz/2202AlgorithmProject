@@ -115,14 +115,18 @@ void print_KMP(int patternLength, char patternNum) {
 	return;
 }
 
+/// <summary>
+/// KMP 알고리즘 : 길이가 M인 문자열 내에 길이가 N인 단어가 있는지 확인하는 알고리즘
+/// KMP 알고리즘을 이용해 map을 color 배열에 따라 출력해준다.
+/// </summary>
+/// <param name="input_color">map의 색깔(0~12), 14:line color</param>
 void KMP(int* input_color) {
 	for (int i = 0; i < GC_MAP_ROW; i++) {
 		int currentCharPoint = 0;
 		int dismatchPoint = 0;
 		int patternTable[20] = {0, };
 		int patternTableIdx = 0;
-		// KMP 알고리즘
-		// 길이가 M인 문자열 내에 길이가 N인 단어가 있는지 확인하는 알고리즘
+
 		while (currentCharPoint+1 <= GC_MAP_COL) {
 			// 다음 인덱스 문자와 비교해서 같다면 패턴 테이블 += 1
 			if (map[i][currentCharPoint] == map[i][currentCharPoint + 1]) {
@@ -146,6 +150,12 @@ void KMP(int* input_color) {
 	return;
 }
 
+/// <summary>
+/// 플레이어가 입력한 input_color와 알고리즘을 통해 구한 node_color를 비교하며 정답인지 확인
+/// </summary>
+/// <param name="node_color">정답에 해당하는 node_color</param>
+/// <param name="input_color">플레이어가 입력한 input_color</param>
+/// <returns></returns>
 int CheckAnswer(int* node_color, int* input_color) {
 	int success = 1;
 	printf("제출하신 정답입니다.\n");
