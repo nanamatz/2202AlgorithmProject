@@ -156,7 +156,7 @@ void GC_PrintMap(int* input_color) {
 /// <returns></returns>
 int CheckAnswer(int* node_color, int* input_color) {
 	int success = 1;
-	printf("제출하신 정답입니다.\n");
+	printf("제출한 정답이군..\n");
 	Sleep(1000);
 	GC_PrintMap(input_color);
 	Sleep(1000);
@@ -174,9 +174,9 @@ int CheckAnswer(int* node_color, int* input_color) {
 
 	Sleep(1000);
 	if (success == 1)
-		printf("축하드립니다! 정답입니다!");
+		printf("축하한다! 정답이야");
 	else
-		printf("아쉽지만 오답입니다. 다시 생각해보세요.");
+		printf("아쉽지만 내가 원하는 답은 아니야.");
 
 	return success;
 }
