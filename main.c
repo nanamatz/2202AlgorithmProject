@@ -832,7 +832,7 @@ int selectToStealItem(ItemType* head,ItemType* inventory) {
         }
         else {
             gotoxy(65, 4);
-            printf("*유효한 번호를 입력하세요(1~6)*");
+            printf("*유효한 번호를 입력하세요(1~%d)*",ITEM);
             Sleep(1000);
             system("cls");
             print_totalItemList(head, inventory);
