@@ -201,6 +201,7 @@ int spaceCount;//스페이스 눌러야하는 개수
 int cost = 10;// 0/1배낭 열 크기(비용)
 int userSolution=0; //사용자 배낭의 총 가치
 int userCap = 0;
+int userSpace = 0;
 
 int vertex_arr[SIZE] = { 0,1,2,3,4 };
 int count = 0;
@@ -214,6 +215,9 @@ void introText();
 void firstTest();
 void secondTest();
 void LastTest();
+
+//프레임 출력 함수
+void print_frame();
 
 // 콘솔 텍스트 색상 변경해주는 함수
 void setColor(unsigned short text);
@@ -286,7 +290,18 @@ void gotoxy(int x, int y)
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 
 }
-
+void print_frame() {
+    gotoxy(0, 20);
+    printf("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n");
+    printf("■　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　■\n");
+    printf("■　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　■\n");
+    printf("■　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　■\n");
+    printf("■　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　■\n");
+    printf("■　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　■\n");
+    printf("■　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　■\n");
+    printf("■　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　     Progress to Enter　■\n");
+    printf("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n");
+}
 void print_title() {
     gotoxy(0, 0);
     printf("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n");
@@ -563,6 +578,7 @@ void game_over() {
     system("cls");
     gotoxy(30, 14);
     printf("얘야 여기서 뭐하니?");
+    Sleep(750);
     gotoxy(30, 15);
     printf("잡았다 요놈!\n");
     Sleep(2000);
@@ -614,10 +630,14 @@ void game_fail() {
 }
 void printSpaceCount() {
     gotoxy(0, 27);
-    printf("!!!Type [Space Bar]!!!");
+    printf("[Space Bar]");
+
     gotoxy(0, 28);
     for (int i = 0; i < spaceCount; i++) {
         printf("◆");
+    }
+    for (int i = 0; i < userSpace; i++) {
+        printf("  ");
     }
 
 }
@@ -625,6 +645,7 @@ void keyIn() {
     int userInputKey;
     userInputKey = _getch();
     if (userInputKey == 32) {
+        userSpace++;
         spaceCount--;
     }
 }
@@ -708,6 +729,7 @@ int monitoring() {
 
         count_timer++;
         if (spaceCount <= 0) {
+ 
             return 1;//훔치기 성공
         }
     }
@@ -726,77 +748,126 @@ void init() {
 }
 void introText() {
     int x, y;
-    x = 1; y = 1;
-    gotoxy(x, y);
-    printf("2012년 7월 26일 여름...");     gotoxy(x, y++); getchar();
-    printf("드디어 다음주면 고대하던 여름 방학..!");   gotoxy(x, y++); getchar();
-    printf("지긋지긋한 학교 생활...");   gotoxy(x, y++); getchar();
-    printf("반 애들은 벌써 다 친해져서 피시방도 같이 가던데..");   gotoxy(x, y++); getchar();
-    printf("나는 아직도 혼자다..");   gotoxy(x, y++); getchar();
-    printf("친구들이랑 피시방 가면 얼마나 재밌을까..?");   gotoxy(x, y++); getchar();
-    printf("이대로면 여름 방학에도 할머니댁이나 가겠지..");   gotoxy(x, y++); getchar();
-    printf("에휴...나도 삼선 슬리퍼 신고 싶다...");   gotoxy(x, y++); getchar();
-    printf("<복도에 시끌시끌한 소리가 울려 퍼진다>");   gotoxy(x, y++); getchar();
-    printf("일월초 일짱 김형택이다..!");   gotoxy(x, y++); getchar();
-    printf("와...험멜 레인보우다..! 나...도 험멜 입고싶다..");   gotoxy(x, y++); getchar();
-    printf("나는 언제쯤...ㅜ");   gotoxy(x, y++); getchar();
-    printf("에이! 이딴 스누피 실내화!");   gotoxy(x, y++); getchar();
-    printf("<땅에 던지려던 실내화가 일월초 삼짱 민규의 뒤통수에 꽂혔다>");   gotoxy(x, y++); getchar();
-    printf("(퍽!)");   gotoxy(x, y++); getchar();
-    printf("[아 XX, 어떤 새끼야!!]");   gotoxy(x, y++); getchar();
-    printf("헉..");   gotoxy(x, y++); getchar();
+    x = 3;
+    y = 22;
     system("cls");
-    x = 1; y = 1;
-    gotoxy(x, y);
-    printf("[야야,민규야 참아~ 뭐 별것도 아닌걸로 그래~]"); gotoxy(x, y++); getchar();
-    printf("[아니 X만한 놈이 시비털잖아 지존 어이없어;;]"); gotoxy(x, y++); getchar();
-    printf("[알았으니까 그만하라고]"); gotoxy(x, y++); getchar();
-    printf("[ㅇ..어..알았어,, 너 운 좋은줄 알아라 찐따 새끼야]"); gotoxy(x, y++); getchar();
-    printf("[미...미안해..정말...]"); gotoxy(x, y++); getchar();
-    printf("[나는 김형택이야, 넌 이름이 뭐냐?]"); gotoxy(x, y++); getchar();
-    printf("[ㄴ..나..나는 장..정욱...]"); gotoxy(x, y++); getchar();
-    printf("[아 너가 걔구나~ 그 서든 스나 80퍼]"); gotoxy(x, y++); getchar();
-    printf("[ㅇ..으..응 마..맞아..]"); gotoxy(x, y++); getchar();
-    printf("[우리 클전하러 갈건데 너도 올래?]"); gotoxy(x, y++); getchar();
-    printf("[야 형택아 이딴 ㅈ밥을 그냥 데려간다고?]"); gotoxy(x, y++); getchar();
-    printf("[그니깐 우리 클랜이 가오가 있지 이런 찐따녀석이랑 피시방을 어떻게 가!]"); gotoxy(x, y++); getchar();
-    printf("[당연히 그냥은 아니고ㅋㅋ]"); gotoxy(x, y++); getchar();
-    printf("[세 가지 시험을 통과하면 널 받아주마]"); gotoxy(x, y++); getchar();
-    printf("시험이라...무슨 시험일까..?"); gotoxy(x, y++); getchar();
+    print_frame();
+    gotoxy(x, y++);
+    printf("  2012년 7월 26일 여름..."); getchar(); gotoxy(x, y++);
+    printf("  드디어 다음주면 고대하던 여름 방학..!");  getchar(); gotoxy(x, y++);
+    printf("  지긋지긋한 학교 생활..."); getchar();  gotoxy(x, y++);
+    printf("  반 애들은 벌써 다 친해져서 피시방도 같이 가던데.."); getchar();  gotoxy(x, y++);
+    printf("  나는 여전히 혼자다..");  getchar();
+    system("cls");
+    print_frame();
+     y = 22;
+    gotoxy(x, y++);
+    printf("  친구들이랑 피시방 무슨 느낌일까..?");  getchar(); gotoxy(x, y++);
+    printf("  이대로면 여름 방학에도 할머니댁이나 가겠지.."); getchar();  gotoxy(x, y++);
+    printf("  그리고 2학기도 지금과 다를게 없겠지..");  getchar(); gotoxy(x, y++);
+    printf("  <자와자와 웅성웅성>");  getchar(); gotoxy(x, y++);
+    printf("  헉,,일월초 일짱 김형택이다..!");    getchar();
+    system("cls");
+    print_frame();
+     y = 22;
+    gotoxy(x, y++);
+    printf("  [김형택]: 아 너 없으면 우리 스나수 없다고;;"); getchar();  gotoxy(x, y++); 
+    printf("  [이민규]: 오늘이 태권도 승급 심사인줄 몰랐어,,미안해"); getchar();  gotoxy(x, y++); 
+    printf("  [김형택]: 노랑띠나 초록띠나 똑같은데 그냥 째자;;"); getchar();  gotoxy(x, y++); 
+    printf("  [이민규]: 안돼,,,엄마가 오늘 꼭 가랬어..."); getchar();   gotoxy(x, y++); 
+    printf("  (퍽!퍽퍽!)");    getchar();
+    system("cls");
+    print_frame();
+     y = 22;
+    gotoxy(x, y++);
+    printf("  [김형택]: 하,,꺼져 그냥");   getchar(); gotoxy(x, y++);
+    printf("  [이민규]: 미,,미안해 형택아..정말");   getchar(); gotoxy(x, y++);
+    printf("  일월초 삼짱 이민규가 왼팔을 부여잡고 사라진다"); getchar();  gotoxy(x, y++);
+    printf("  이건 기회야,,형님들한테 깊-은 인상을 남겨줄거야"); getchar();  gotoxy(x, y++);
+    printf("  [나]: 저,,저,,,형택,,형택아,,!");   getchar();
+    system("cls");
+    print_frame();
+     y = 22;
+    gotoxy(x, y++);
+    printf("  [김형택]: ???");  getchar(); gotoxy(x, y++);
+    printf("  [김형택]: 뭐야 너 나 알아?");  getchar(); gotoxy(x, y++);
+    printf("  [나]: 으,,응 알지 당연히 널 모르는 애가 어딨어,,");  getchar(); gotoxy(x, y++);
+    printf("  [김형택]: 훗,,그래서 뭔데?"); getchar();  gotoxy(x, y++);
+    printf("  [나]: 그,,스나수,,,내가 해도 될까?");  getchar(); gotoxy(x, y++);
+    system("cls");
+    print_frame();
+     y = 22;
+    gotoxy(x, y++);
+    printf("  [김형택]: 뭐?ㅋ 어디서 엿듣고 있었네 이거");  getchar(); gotoxy(x, y++);
+    printf("  [김형택]: 너 스나 몇 펀데?");  getchar(); gotoxy(x, y++);
+    printf("  [나]: 그,,,65펀데,,,내가 맨날 공방에서 크카만해서,,,,");  getchar(); gotoxy(x, y++);
+    printf("  [김형택]: 65라,,,좀 애매한데,,,");  getchar(); gotoxy(x, y++);
+    printf("  [나]: 그 그래도..!삼보 브리핑이라면 애국가보다 잘 부를 수 있어!제발!");  getchar();
+    system("cls");
+    print_frame();
+     y = 22;
+    gotoxy(x, y++);
+    printf("  [김형택]: 뭐가 이리 간절해..");   getchar(); gotoxy(x, y++);
+    printf("  [김형택]: 좋아 네 놈의 능력을 한 번 보고 정하도록 하지");  getchar(); gotoxy(x, y++);
+    printf("  [김형택]: ZIZONE일월 클랜에 들어오려면 세 가지 테스트를 전부 통과해야돼");  getchar(); gotoxy(x, y++);
+    printf("  [김형택]: 마지막까지 나를 만족시킨다면 정식 클랜원으로 받아주지");  getchar(); gotoxy(x, y++);
+    printf("  [나]: 테..테스트..? 어떤...");getchar();
 }
 void firstTest() {
-    int x, y;
-    x = 1; y = 1;
-    gotoxy(x, y);
-    printf("첫번째 테스트는 가볍게 달리기 시합");     gotoxy(x, y++); getchar();
-    printf("일월초 삼짱과 달리기 시합을 해서 비기거나 이기면 된다.");   gotoxy(x, y++); getchar();
-    printf("일월초 정문에서 시작해서");   gotoxy(x, y++); getchar();
-    printf("정해진 건물들을 전부 찌고 다시 정문으로 돌아오면 된다.");   gotoxy(x, y++); getchar();
-    printf("어떤 경로를 선택하느냐에 따라 승패가 갈릴 것 같다."); getchar();
+    int x,y;
+    x = 3;
+     y =22;
+    system("cls");
+    print_frame();
+    gotoxy(x, y++);
+    printf("  첫번째 테스트: 서든어택 런어웨이");    getchar(); gotoxy(x, y++);
+    printf("  [김형택] 우리 클랜의 '박기태'가 널 상대할거야"); getchar();  gotoxy(x, y++);
+    printf("  [김형택] 그럼 규칙을 설명해주지"); getchar();  gotoxy(x, y++); 
+    printf("  <레드 베이스>에서 <A설대>,<B설대>,<블루 베이스>,<로비>를 전부 찍고 돌아와야한다");  getchar(); gotoxy(x, y++);
+    printf("  [김형택] 기태보다 늦게오지만 않는다면 [통과]시켜주지"); getchar();
 }
 void secondTest() {
-    int x, y;
-    x = 1; y = 1;
-    gotoxy(x, y);
-    printf("두번째 테스트는 땅따먹기 문제야");     gotoxy(x, y++); getchar();
-    printf("너의 능지가 얼마나 좋은지 확인해야겠어");   gotoxy(x, y++); getchar();
-    printf("서든 어택의 맵을 보여주고 각 구역이 나뉘어져 있을거야");   gotoxy(x, y++); getchar();
-    printf("각 구역은 하나의 팀이 점령할 수 있어"); gotoxy(x, y++); getchar();
-    printf("단 인접한 두 개 이상의 구역을 하나의 팀이 점령할 수는 없어"); gotoxy(x, y++); getchar();
-    printf("단, 최소의 팀으로 모든 구역을 점령해야한다"); getchar();
+    int x,y;
+    x = 3;
+     y = 22;
+    system("cls");
+    print_frame();
+    gotoxy(x, y++);
+    printf("  두번째 테스트: 서든어택 점령 전략");    getchar(); gotoxy(x, y++);
+    printf("  [김형택] 방금은 너의 피지컬 테스트였어");  getchar(); gotoxy(x, y++);
+    printf("  [김형택] 이번엔 너의 능지를 한 번 확인해보지");  getchar(); gotoxy(x, y++);
+    printf("  [김형택] 이번 테스트의 규칙을 설명해주지");  getchar(); gotoxy(x, y++);
+    printf("  *임의의 서든어택 맵이 제시된다. 서든어택 맵은 구역으로 나뉘어져있다."); getchar();
+     y = 22;
+    system("cls");
+    print_frame();
+    gotoxy(x, y++);
+    printf("  *각 구역은 점령 가능하고, 각 구역 당 하나의 팀만 점령 가능하다.");   getchar();  gotoxy(x, y++);
+    printf("  *인접한 구역을 동일한 팀이 점령할 수 없다."); getchar();  gotoxy(x, y++);
+    printf("  *모든 구역을 점령하면 테스트가 종료된다.");   getchar(); gotoxy(x, y++);
+    printf("  [김형택] 만약 모든 구역을 최소의 팀을 이용해서 점령한다면 [통과]시켜주지");  getchar(); 
 }
 void LastTest() {
-    int x, y;
-    x = 1; y = 1;
-    gotoxy(x, y);
-    printf("여기까지 올 줄은 몰랐는데..");     gotoxy(x, y++); getchar();
-    printf("꽤나 놀랍군 후후");   gotoxy(x, y++); getchar();
-    printf("자 그럼 마지막 시험도 통과할 수 있는지 한 번 지켜보도록 하지");   gotoxy(x, y++); getchar();
-    printf("마지막 시험은 <딱따구리 문방구>에서 이 [실내화 가방]에 물건들을 훔쳐오는거다");   gotoxy(x, y++); getchar();
-    printf("훔치다가 걸려도 난 모르는 일이고"); gotoxy(x, y++); getchar();
-    printf("나는 돈을 제일 좋아하는거 알지?"); gotoxy(x, y++); getchar();
-    printf("내 기준에 맞춰서 잘 가져오라고~"); gotoxy(x, y++); getchar();
-    printf("배짱이 얼마나 두둑한가 볼까나~"); getchar();
+    int x,y;
+    x = 3;
+     y = 22;
+    system("cls");
+    print_frame();
+    gotoxy(x, y++);
+    printf("  마지막 테스트: 배짱 테스트");    getchar(); gotoxy(x, y++);
+    printf("  [김형택] 여기까지 올 줄은 몰랐는걸");  getchar(); gotoxy(x, y++);
+    printf("  [김형택] 기대는 안했지만 꽤나 놀랍군"); getchar();  gotoxy(x, y++);
+    printf("  [김형택] 서든어택 실력은 앞선 테스트에서 확인했으니");   getchar(); gotoxy(x, y++);
+    printf("  [김형택] 이번엔 너의 담력이 얼마나 좋은지 한 번 확인해보지");getchar();
+     y = 22;
+    system("cls");
+    print_frame();
+    gotoxy(x, y++);
+    printf("  [김형택] 학교 앞에 있는 <딱따구리 문방구> 알지?");  getchar(); gotoxy(x, y++);
+    printf("  [김형택] 거기에서 내가 좋아하는 물건들을 좀 훔쳐와봐");   getchar(); gotoxy(x, y++);
+    printf("  [김형택] 훔치다 걸리면 난 모르는 일이니까 알아서 하고"); getchar();  gotoxy(x, y++);
+    printf("  [김형택] 여기 <실내화 가방>에 최대한 담아오라구"); getchar();  gotoxy(x, y++);
+    printf("  형택이는 무엇보다 돈을 좋아한다. 가치가 높은 물건을 최대한 많이 챙기는게 관건이다."); getchar();
 }
 int selectToStealItem(ItemType* head,ItemType* inventory) {
     while (_kbhit()) { 
@@ -808,7 +879,7 @@ int selectToStealItem(ItemType* head,ItemType* inventory) {
         gotoxy(65, 3);
         printf(">>훔칠 물건의 번호 입력>>");
         scanf_s("%d", &itemNum);
-        if (0 < itemNum && itemNum < 7) {
+        if (1 <= itemNum && itemNum <= ITEM) {
             if (head->itemList[itemNum]->isStolen) {
                 gotoxy(65, 4);
                 printf("*%s는 이미 훔친 물건입니다*", head->itemList[itemNum]->name);
@@ -869,34 +940,26 @@ void itemGenerator(ItemType* List) {
 int main(void) {
 
     init();
-    print_title();
-   // introText(); //인트로 생략
 
-    system("cls");
+    print_title();
+
+    introText(); 
+    Sleep(1000);
 
     firstTest(); //첫번째 시험 영준이와 달리기 시합
-
-    system("cls");
+    Sleep(1000);
 
     projectTSP();
-
-    Sleep(3000);
-
-    system("cls");
+    Sleep(1000);
 
     secondTest(); //두번째 시험 최소값 땅따먹기
-
-    Sleep(3000);
-
-    system("cls");
+    Sleep(1000);
 
     GC();
-
-    Sleep(3000);
-
-    system("cls");
-
+    Sleep(1000);
+    
     LastTest();//마지막 시험 도둑질 능력 테스트
+    Sleep(1000);
 
     ItemType List;
     ItemType bag;
@@ -954,9 +1017,10 @@ int main(void) {
 
         if (selectToStealItem(&List, &bag))//훔칠 상품 번호 입력받기
             break;
-        spaceCount = 1 * List.itemList[itemNum]->difficulty;
+        spaceCount = 20 * List.itemList[itemNum]->difficulty;
 
         if (monitoring()) {
+            Sleep(500);
             system("cls");
 
             insert_itemList(&bag, List.itemList[itemNum]);
@@ -1059,13 +1123,8 @@ void projectTSP() {
         int is_input = TRUE;
         printf("====================================이동 경로====================================\n");
         print_path(player_path, count);
-        do {
-            printf("\r이동 위치 : ");
-            scanf("%d", &player_input);
-            if (1 <= player_input && player_input <= SIZE)break;
-        } while (1 <= player_input && player_input <= SIZE);
-
-
+        printf("\r이동 위치 : ");
+        scanf("%d", &player_input);
         for (int i = 0; i < SIZE; i++) {
             if (player_path[i] == player_input) {
                 printf("이미 간 곳입니다.\n");
@@ -1123,18 +1182,19 @@ void projectTSP() {
     Sleep(3000);
     system("cls");
     if (player_sum > tsp_sum) {
-        gotoxy(35, 13); printf("영준이보다 %d초 늦었군",player_sum - tsp_sum); Sleep(1000);
-        gotoxy(35, 14); printf("시험은 끝났다"); Sleep(1000);
-        gotoxy(35, 15); printf("앞으로 우리 앞에 얼씬 거리지 마라"); Sleep(1000);
+        gotoxy(35, 13); printf("기태보다 %d초 늦었군",player_sum - tsp_sum); Sleep(1000);
+        gotoxy(35, 14); printf("피지컬부터 딸리는데??"); Sleep(1000);
+        gotoxy(35, 15); printf("다신 앞에 얼씬 거리지 마라"); Sleep(1000);
+        gotoxy(35, 15); printf("괜히 시간 낭비했네 에잉 쯧"); Sleep(1000);
         exit(0);
     }
     else if (player_sum == tsp_sum) {
-        gotoxy(35, 13); printf("영준이랑 동시에 도착했군"); Sleep(1000);
+        gotoxy(35, 13); printf("기태랑 동시에 도착했군"); Sleep(1000);
         gotoxy(35, 14); printf("다음 시험으로 넘어가지"); Sleep(1000);
     }
     else {
-        gotoxy(35, 13); printf("영준이보다 %d초 빨랐군",tsp_sum - player_sum); Sleep(1000);
-        gotoxy(35, 14); printf("신체 능력은 영준이보다 낫군"); Sleep(1000);
+        gotoxy(35, 13); printf("기태보다 %d초 빨랐군",tsp_sum - player_sum); Sleep(1000);
+        gotoxy(35, 14); printf("피지컬은 기태보다 낫군"); Sleep(1000);
         gotoxy(35, 15); printf("좋아 다음 시험으로 넘어가지"); Sleep(1000);
     }
 
@@ -1310,22 +1370,22 @@ void print_path(int path_arr[], int size) {
     for (int i = 0; i < size; i++) {
         switch (path_arr[i]) {
         case 0:
-            printf("[일월초 정문]");
+            printf("[레드 베이스]");
             break;
         case 1:
-            printf("-[문구 팬시]->");
+            printf("-[A 설대]->");
             break;
         case 2:
-            printf("-[다농 마트]->");
+            printf("-[로비]->");
             break;
         case 3:
-            printf("-[김밥 나라]->");
+            printf("-[B 설대]->");
             break;
         case 4:
-            printf("-[딱따구리 문방구]->");
+            printf("-[블루 베이스]->");
             break;
         default:
-            printf("[일월초 정문]");
+            printf("[레드 베이스]");
         }
     }
     printf("\n");
