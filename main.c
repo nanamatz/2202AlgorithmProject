@@ -124,6 +124,7 @@ typedef struct Point {
     int x;
     int y;
 }Point;
+
 //각 정점 가중치
 int weight_arr[SIZE][SIZE] = {
 {0,1,1,1,1},
@@ -515,17 +516,19 @@ int knapsack(ItemType* bag,ItemType* head,int cost) {
     }
     free(wp);
     //==========배낭 포함==========
-    gotoxy(0, 20); printf("===최적 물건 리스트===");
-    gotoxy(0, 21);
-    printf("[1] [2] [3] [4] [5] [6]");
-    gotoxy(0, 22);
+    gotoxy(35, 25); printf("=============최적 물건 리스트=============");
+    gotoxy(35, 26);
+    for (int i = 1; i < ITEM + 1; i++) {
+        printf("[ %d ]", i);
+    }
+    gotoxy(35, 27);
     for (int j = 1; j < ITEM+1; j++) {
         if (include[j]) {
-            printf(" 1 ");
+            printf("  1 ");
             bestSolution_weight += head->itemList[j]->weight;
         }
         else {
-            printf(" 0 ");
+            printf("  0 ");
         }
         printf(" ");
     }
@@ -698,7 +701,7 @@ int monitoring() {
         }
         random = rand() % DIFFICULTY + 1;//1~100중 
         //===========================================================
-        if (random == 100) {//200이 나오면 감시 모드
+        if (random == 100) {//100이 나오면 감시 모드
 
             endTime = (unsigned)time(NULL);
 
@@ -706,7 +709,7 @@ int monitoring() {
 
             endTime += monitorTime;
             print_monitoring(fp_question);
-            Sleep(250);
+            Sleep(500);
             while (_kbhit()) {  //감시 모드에서 kbhit 정상 검사를 위해 버퍼를 사전에 비우는 작업
                 _getch();
             }
@@ -739,7 +742,7 @@ int monitoring() {
 
 void init() {
     /* system("mode con cols =30 lines = 130 | title 일월초 일짱 되기");*/
-    system("mode con cols=140 lines=100 | title 일월초 일짱 되기");
+    system("mode con cols=140 lines=50 | title 일월초 일짱 되기");
     //커서 깜빡임 없애기
     CONSOLE_CURSOR_INFO cursorInfo = { 0, };
     cursorInfo.bVisible = 0;
@@ -782,8 +785,12 @@ void introText() {
     gotoxy(x, y++);
     printf("  [김형택]: 하,,꺼져 그냥");   getchar(); gotoxy(x, y++);
     printf("  [이민규]: 미,,미안해 형택아..정말");   getchar(); gotoxy(x, y++);
-    printf("  일월초 삼짱 이민규가 왼팔을 부여잡고 사라진다"); getchar();  gotoxy(x, y++);
-    printf("  이건 기회야,,형님들한테 깊-은 인상을 남겨줄거야"); getchar();  gotoxy(x, y++);
+    
+    
+    
+    
+    printf("  일월초 삼짱 이민규가 왼팔을 부여잡고 사라진다"); getchar(); gotoxy(x, y++);
+    printf("  이건 기회야..형님들한테 깊-은 인상을 남겨줄거야"); getchar(); gotoxy(x, y++);
     printf("  [나]: 저,,저,,,형택,,형택아,,!");   getchar();
     system("cls");
     print_frame();
@@ -943,23 +950,22 @@ int main(void) {
 
     print_title();
 
-    introText(); 
-    Sleep(1000);
+   introText(); 
 
-    firstTest(); //첫번째 시험 영준이와 달리기 시합
-    Sleep(1000);
+   firstTest(); //첫번째 시험 영준이와 달리기 시합
+    Sleep(500);
 
     projectTSP();
-    Sleep(1000);
+     Sleep(500);
 
-    secondTest(); //두번째 시험 최소값 땅따먹기
-    Sleep(1000);
+   secondTest(); //두번째 시험 최소값 땅따먹기
+   Sleep(500);
 
-    GC();
-    Sleep(1000);
+   GC();
+   Sleep(500);
     
-    LastTest();//마지막 시험 도둑질 능력 테스트
-    Sleep(1000);
+   LastTest();//마지막 시험 도둑질 능력 테스트
+   Sleep(500);
 
     ItemType List;
     ItemType bag;
@@ -1177,7 +1183,7 @@ void projectTSP() {
     }
     gotoxy(35, 10); printf("====================================내 경로====================================");
     gotoxy(35, 11); print_path(player_path, count);
-    gotoxy(35, 13); printf("==================================영준이 경로==================================");
+    gotoxy(35, 13); printf("==================================기태 경로==================================");
     gotoxy(35, 14); print_path(path_arr, SIZE + 1);
     Sleep(3000);
     system("cls");
@@ -1185,8 +1191,8 @@ void projectTSP() {
         gotoxy(35, 13); printf("기태보다 %d초 늦었군",player_sum - tsp_sum); Sleep(1000);
         gotoxy(35, 14); printf("피지컬부터 딸리는데??"); Sleep(1000);
         gotoxy(35, 15); printf("다신 앞에 얼씬 거리지 마라"); Sleep(1000);
-        gotoxy(35, 15); printf("괜히 시간 낭비했네 에잉 쯧"); Sleep(1000);
-        exit(0);
+        gotoxy(35, 16); printf("괜히 시간 낭비했네 에잉 쯧"); Sleep(1000);
+        //exit(0);
     }
     else if (player_sum == tsp_sum) {
         gotoxy(35, 13); printf("기태랑 동시에 도착했군"); Sleep(1000);
@@ -1488,6 +1494,8 @@ void PrintPattern(int patternLength, char patternNum) {
 /// </summary>
 /// <param name="input_color">map의 색깔(0~12), 14:line color</param>
 void GC_PrintMap(int* input_color) {
+    system("cls");
+    gotoxy(0, 0);
     for (int i = 0; i < GC_MAP_ROW; i++) {
         int currentCharPoint = 3;
         int patternTable[20] = { 0, };
@@ -1546,7 +1554,7 @@ int CheckAnswer(int* node_color, int* input_color) {
         gotoxy(35, 13); printf("능지는 딸리는 녀석이군"); Sleep(1000);
         gotoxy(35, 14); printf("역시 우리 수준에는 안맞아"); Sleep(1000);
         gotoxy(35, 15); printf("가서 공부나 해라"); Sleep(1000);
-        exit(0);
+        //exit(0);
     }
 
 
